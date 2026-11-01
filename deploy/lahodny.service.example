@@ -1,0 +1,21 @@
+# Replace placeholders. Create the service user and writable private data directory first.
+[Unit]
+Description=Web Ing. Stanislav Lahodny
+After=network-online.target
+Wants=network-online.target
+[Service]
+Type=simple
+User=__SERVICE_USER__
+Group=__SERVICE_GROUP__
+WorkingDirectory=__PROJECT_PATH__
+EnvironmentFile=__PRIVATE_ENV_FILE__
+ExecStart=/usr/bin/python3 __PROJECT_PATH__/app.py --bind 127.0.0.1 --port 8000
+Restart=on-failure
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=__APP_DATA_DIR__
+[Install]
+WantedBy=multi-user.target

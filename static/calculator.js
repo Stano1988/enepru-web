@@ -39,6 +39,7 @@ try {
     const name = control.dataset.region;
     control.setAttribute('aria-label', name + ', ' + t('ui_travel','výjezd se zaměřením') + ' ' + regionPrice(name));
     control.dataset.band = pricing.regions[name] === null ? 'request' : String(pricing.regions[name]);
+    if(control.tagName.toLowerCase()==='path' && window.SITE.mapBands?.[name])control.style.fill=window.SITE.mapBands[name];
     if (control.querySelector('title')) control.querySelector('title').textContent = name + ': ' + regionPrice(name);
     control.addEventListener('click', () => {
       $('region').value = name;

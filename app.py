@@ -27,6 +27,10 @@ def initialize():
     with db() as c:
         c.executescript('CREATE TABLE IF NOT EXISTS content(id INTEGER PRIMARY KEY CHECK(id=1), revision INTEGER NOT NULL, body TEXT NOT NULL); CREATE TABLE IF NOT EXISTS auth(id INTEGER PRIMARY KEY CHECK(id=1),salt TEXT,hash TEXT); CREATE TABLE IF NOT EXISTS requests(id TEXT PRIMARY KEY, fingerprint TEXT NOT NULL, state TEXT NOT NULL, created INTEGER NOT NULL); CREATE TABLE IF NOT EXISTS views(day TEXT,page TEXT,count INTEGER, PRIMARY KEY(day,page));')
         c.execute('INSERT OR IGNORE INTO content VALUES(1,1,?)',(ROOT.joinpath('content.default.json').read_text(),))
+        saved_rev,saved_body=c.execute('SELECT revision,body FROM content WHERE id=1').fetchone()
+        saved=json.loads(saved_body);defaults=json.loads(ROOT.joinpath('content.default.json').read_text());missing={k:v for k,v in defaults.items() if k not in saved}
+        if missing:
+            saved.update(missing);c.execute('UPDATE content SET revision=revision+1,body=? WHERE id=1',(json.dumps(saved,ensure_ascii=False),))
         # An interrupted send is deliberately uncertain, never automatically replayed.
         c.execute("UPDATE requests SET state='uncertain' WHERE state='sending'")
 
@@ -67,13 +71,17 @@ def quote(p, data):
 
 def validate_content(data, original):
     if set(data)!=set(original):raise Invalid('Neplatná struktura obsahu.')
-    for section in ('texts','ui','seo','legal'):
+    for section in ('texts','ui','seo','legal','contacts','mapBands'):
         if set(data[section])!=set(original[section]):raise Invalid('Změněná struktura textů.')
     def strings(v):
         if isinstance(v,dict):
             for a in v.values():strings(a)
         elif not isinstance(v,str) or len(v)>40000:raise Invalid('Neplatný text.')
-    for s in ('texts','ui','seo','legal'):strings(data[s])
+    for s in ('texts','ui','seo','legal','contacts','mapBands'):strings(data[s])
+    if any(not re.fullmatch(r'#[0-9a-fA-F]{6}',v) for v in data['mapBands'].values()):raise Invalid('Barvy pásem musí mít formát #RRGGBB.')
+    if any(len(data['ui'][k].split('|'))!=5 for k in ('ui_house_sizes','ui_apartment_sizes')):raise Invalid('Popisky rozsahu musí obsahovat pět možností oddělených znakem |.')
+    if not re.fullmatch(r'[^\s@<>\r\n]+@[^\s@<>\r\n]+\.[^\s@<>\r\n]+',data['contacts']['email']):raise Invalid('Neplatný kontaktní e-mail.')
+    if not re.fullmatch(r'[+0-9 ()-]{5,30}',data['contacts']['phone']):raise Invalid('Neplatný telefon.')
     def numbers(a,b):
         if isinstance(b,dict):
             if not isinstance(a,dict) or set(a)!=set(b):raise Invalid('Neplatná struktura ceníku.')
@@ -131,6 +139,14 @@ def render(route,site,rev):
     for k,text in site['legal'].items():
         legal+=f'<section class="page wrap" id="{k}"'+(' hidden' if route!=k else '')+'><div class="page-heading"><h1>'+html.escape(site['seo'][k]['title'].split(' | ')[0])+'</h1></div><article class="legal-copy">'+''.join('<p>'+html.escape(p).replace('\n','<br>')+'</p>' for p in text.split('\n\n'))+'</article></section>'
     source=source.replace('@@LEGAL@@',legal)
+    defaults=json.loads(ROOT.joinpath('content.default.json').read_text())['contacts']
+    for key,value in site['contacts'].items():
+        source=source.replace(html.escape(defaults[key],quote=True),html.escape(value,quote=True))
+    name=site['contacts']['name'].rsplit(' ',1)
+    brand=html.escape(name[0])+(' <strong>'+html.escape(name[1])+'</strong>' if len(name)>1 else '')
+    source=re.sub(r'(<span class="person-name">).*?(</span>)',lambda m:m[1]+brand+m[2],source)
+    source=source.replace('tel:+420604572042','tel:'+re.sub(r'[^+0-9]','',site['contacts']['phone']))
+    source=source.replace('mailto:penb.lahodny@seznam.cz','mailto:'+html.escape(site['contacts']['email'],quote=True))
     seo=site['seo'][route]
     source=re.sub(r'<title>.*?</title>','<title>'+html.escape(seo['title'])+'</title>',source)
     source=re.sub(r'<meta name="description"[^>]*>','<meta name="description" content="'+html.escape(seo['description'],quote=True)+'">',source)
@@ -187,7 +203,7 @@ class Handler(BaseHTTPRequestHandler):
             return self.reply(200,p.read_bytes(),mime)
         if path=='/api/status':return self.json(200,{'canSend':smtp_ready() and self.secure()})
         if path=='/site-data.js':
-            rev,site=content();public={k:site[k] for k in ('pricing','ui','seo')};public['revision']=rev
+            rev,site=content();public={k:site[k] for k in ('pricing','ui','seo','mapBands')};public['revision']=rev
             return self.reply(200,'window.SITE='+json.dumps(public,ensure_ascii=True).replace('<','\\u003c')+';','text/javascript; charset=utf-8')
         if path.startswith('/admin') or path.startswith('/api/admin'):
             if not self.admin_allowed():return self.reply(403,'Administrace vyžaduje HTTPS.')
@@ -322,6 +338,7 @@ def main():
         print('Heslo bezpečně nastaveno.');return
     origin=os.environ.get('PUBLIC_ORIGIN','')
     if origin and (not origin.startswith('https://') or urlsplit(origin).path not in ('','/') or urlsplit(origin).username):raise SystemExit('PUBLIC_ORIGIN musí být HTTPS origin bez cesty.')
+    server=ThreadingHTTPServer((args.bind,args.port),Handler)
     print(f'Server běží na portu {args.port}. Produkční odesílání vyžaduje HTTPS a SMTP.',flush=True)
-    ThreadingHTTPServer((args.bind,args.port),Handler).serve_forever()
+    server.serve_forever()
 if __name__=='__main__':main()

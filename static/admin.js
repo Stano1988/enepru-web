@@ -2,11 +2,12 @@
  const $=s=>document.querySelector(s);let tab='texts',dirty=false;
  const r=await fetch('/api/admin/content');if(!r.ok){location.href='/admin';return;}
  const state=await r.json(),data=state.content;
- const names={house:'Rodinný dům',apartment:'Bytový dům',other:'Jiná stavba',new:'Novostavba',sale:'Prodej / pronájem',renovation:'Rekonstrukce',regions:'Zaměření – kraje',expressFee:'Expresní příplatek',travelOnRequestFrom:'Minimum zaměření na dotaz',title:'Titulek',description:'Popis pro vyhledávače',uvod:'Úvod',penb:'PENB',pasporty:'Pasporty',dotazy:'Časté dotazy',kontakty:'Kontakty',gdpr:'Zásady zpracování osobních údajů',podminky:'Obchodní podmínky',cookies:'Informace o cookies'};
+ const names={name:'Jméno',address:'Sídlo',ico:'IČO',authorization:'Číslo oprávnění',phone:'Telefon',email:'E-mail',house:'Rodinný dům',apartment:'Bytový dům',other:'Jiná stavba',new:'Novostavba',sale:'Prodej / pronájem',renovation:'Rekonstrukce',regions:'Zaměření – kraje',expressFee:'Expresní příplatek',travelOnRequestFrom:'Minimum zaměření na dotaz',title:'Titulek',description:'Popis pro vyhledávače',uvod:'Úvod',penb:'PENB',pasporty:'Pasporty',dotazy:'Časté dotazy',kontakty:'Kontakty',gdpr:'Zásady zpracování osobních údajů',podminky:'Obchodní podmínky',cookies:'Informace o cookies'};
  function field(parent,key,value,path){
   const label=document.createElement('label'),caption=document.createElement('span');caption.textContent=path.map(k=>names[k]||k).join(' / ');label.append(caption);
-  const numeric=tab==='pricing',input=document.createElement(numeric?'input':'textarea');
+  const numeric=tab==='pricing',input=document.createElement(numeric||tab==='mapBands'?'input':'textarea');
   if(numeric){input.type='number';input.min='0';input.max='10000000';input.step='1';input.placeholder='Na dotaz';}
+  if(tab==='mapBands'){input.type='color';}
   input.value=value??'';if(tab==='legal')input.rows=20;
   label.dataset.search=(caption.textContent+' '+value).toLocaleLowerCase('cs');
   input.addEventListener('input',()=>{if(numeric){if(!input.checkValidity())return;parent[key]=input.value===''?null:Number(input.value);}else parent[key]=input.value;dirty=true;});

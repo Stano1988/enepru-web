@@ -1,4 +1,5 @@
 (() => {
+ document.body.classList.add('js-navigation');
  const routes=['uvod','penb','pasporty','dotazy','kontakty','gdpr','podminky','cookies'];
  function show(){
   const route=location.pathname==='/'?'uvod':location.pathname.slice(1);

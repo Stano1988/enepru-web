@@ -34,18 +34,18 @@
 /* Version 7: calm photo treatment and a typographic identity. */
 .type-brand{display:block;width:250px}.type-brand-name{display:block;font-size:37px;letter-spacing:2px;font-weight:800;line-height:1.1;color:#253b50}.type-brand-name>span{font-weight:400}.brand-spectrum{display:flex;gap:3px;width:145px;height:3px;margin:8px 0 10px}.brand-spectrum i{display:block;flex:1;background:#4c8c68;border-radius:1px}.brand-spectrum i:nth-child(2){background:#79a35e}.brand-spectrum i:nth-child(3){background:#adbb59}.brand-spectrum i:nth-child(4){background:#d4bd51}.brand-spectrum i:nth-child(5){background:#d39b48}.brand-spectrum i:nth-child(6){background:#c47a49}.brand-spectrum i:nth-child(7){background:#b45d50}.type-brand small{font-size:8px;font-weight:400;letter-spacing:0;line-height:1.65;display:block}.type-brand small>span{color:#a16340}.footer-inner .type-brand-name{color:#fff8ee}.footer-inner .type-brand small>span{color:#d8b99f}.header{height:132px}.house-photo-frame{position:relative;height:410px;border-radius:8px;overflow:hidden;box-shadow:0 12px 35px #253b5010}.house-photo-frame .estate-photo{height:100%;box-shadow:none;border-radius:0}.house-light{position:absolute;inset:0;background:linear-gradient(115deg,transparent 10%,#fff0cf55 46%,#fff4dd25 60%,transparent 85%);mix-blend-mode:soft-light;pointer-events:none;animation:daylight 18s ease-in-out infinite}.no-script-note{margin:0;padding:12px 20px;background:#efe6d4;font-size:11px;text-align:center}.header nav a{min-height:44px;display:inline-flex;align-items:center;white-space:nowrap}.header nav{flex-wrap:wrap}html{scroll-behavior:auto}@keyframes daylight{0%,100%{opacity:.25;transform:translateX(-14%)}50%{opacity:.6;transform:translateX(14%)}}
 /* CSS navigation remains usable when a document viewer suppresses JavaScript. */
-body:not(.js-navigation) main>.page{display:none!important}
-body:not(.js-navigation) main>#uvod{display:block!important}
-body:not(.js-navigation) main>.page:target{display:block!important}
-body:not(.js-navigation):has(main>.page:target:not(#uvod)) main>#uvod{display:none!important}
-body:not(.js-navigation):has(#pasport-form:target) main>#uvod{display:none!important}
-body:not(.js-navigation):has(#pasport-form:target) main>#pasporty{display:block!important}
+
+
+
+
+
+
 @media(max-width:1000px){.type-brand{width:225px}.type-brand-name{font-size:34px}.type-brand small{font-size:7.4px}.house-photo-frame{height:350px}}
 @media(max-width:700px){.header{height:auto;padding-top:18px;padding-bottom:8px}.header .brand{margin-bottom:13px}.type-brand{width:248px}.type-brand-name{font-size:34px}.type-brand small{font-size:7.8px}.brand-spectrum{margin:7px 0 9px;width:140px}.header nav{display:grid;grid-template-columns:repeat(5,auto);gap:0;justify-content:space-between;overflow:visible;width:100%;font-size:11px}.header nav a{padding:8px 4px;min-height:46px;justify-content:center}.header nav a:first-child{padding-left:0}.header nav a:last-child{padding-right:0}.house-photo-frame{height:315px}.footer-inner .type-brand{width:225px}.footer-inner .type-brand-name{font-size:31px}.footer-inner .type-brand small{font-size:7px}}
 @media(max-width:350px){.header nav{font-size:10px}.header nav a{padding-left:2px;padding-right:2px}}
 @media(prefers-reduced-motion:reduce){.house-light{animation:none;opacity:.25;transform:none}}
 @media(max-width:700px){.header{position:sticky;top:0;z-index:40;background:var(--paper)}html{scroll-padding-top:175px}}
-body:not(.js-navigation):not(:has(main>.page:target:not(#uvod))):not(:has(#pasport-form:target)) .header nav a[href="#uvod"],body:not(.js-navigation):has(#penb:target) .header nav a[href="#penb"],body:not(.js-navigation):has(#pasporty:target) .header nav a[href="#pasporty"],body:not(.js-navigation):has(#pasport-form:target) .header nav a[href="#pasporty"],body:not(.js-navigation):has(#dotazy:target) .header nav a[href="#dotazy"],body:not(.js-navigation):has(#kontakty:target) .header nav a[href="#kontakty"]{color:#a35f37;border-bottom-color:#a35f37}
+
 .type-brand small{font-size:9px}.header nav a{-webkit-tap-highlight-color:transparent}
 @media(max-width:1000px){.type-brand small{font-size:8px}}
 @media(max-width:700px){.type-brand small{font-size:8.5px}.footer-inner .type-brand small{font-size:7.5px}}
