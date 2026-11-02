@@ -153,3 +153,10 @@ Nový obrázek pracovního stolu v pasportech a kontaktech je AI ilustrace bez d
 
 Vizuální testy po korekcích: `python3 tests/visual_corrections.py` ověřuje především
 polohu domečku, jednorázovou animaci, pravé čtvercové obrázky a omezení pohybu.
+
+## Stažení bez odkazů do cloudového prostředí
+
+Repozitář obsahuje také hotový `nahled.html`. Na GitHubu použijte Code → Download ZIP,
+archiv rozbalte a tento soubor otevřete v prohlížeči. Nemusíte instalovat Python,
+pokud chcete pouze procházet náhled. Soubor je nezávazný náhled s neaktivním
+odesíláním a bez administrace; kompletní serverová část je ve stejném archivu.
