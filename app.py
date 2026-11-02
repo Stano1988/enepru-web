@@ -31,6 +31,15 @@ def initialize():
         saved=json.loads(saved_body);defaults=json.loads(ROOT.joinpath('content.default.json').read_text());missing={k:v for k,v in defaults.items() if k not in saved}
         if missing:
             saved.update(missing);c.execute('UPDATE content SET revision=revision+1,body=? WHERE id=1',(json.dumps(saved,ensure_ascii=False),))
+        # Add new editable captions, preserve owner changes, migrate unchanged payment copy.
+        extra={k:v for k,v in defaults['texts'].items() if k not in saved['texts']}
+        changed=bool(extra);saved['texts'].update(extra)
+        if saved['texts'].get('text_0239')=='Za PENB vystavíme fakturu. Platební podmínky a splatnost vám potvrdíme při domluvě zakázky. Termín zpracování se počítá od potvrzení zakázky a dodání kompletních podkladů. Nejsme plátci DPH.':
+            saved['texts']['text_0239']=defaults['texts']['text_0239'];changed=True
+        if 'Okamžik vystavení, splatnost a případné zálohy budou dohodnuty v potvrzení zakázky; tento web je neurčuje.' in saved['legal']['podminky']:
+            saved['legal']['podminky']=saved['legal']['podminky'].replace('Okamžik vystavení, splatnost a případné zálohy budou dohodnuty v potvrzení zakázky; tento web je neurčuje.','Faktura má splatnost 14 dnů od vystavení. Okamžik vystavení a případné zálohy budou dohodnuty v potvrzení zakázky.');changed=True
+        if changed:
+            c.execute('UPDATE content SET revision=revision+1,body=? WHERE id=1',(json.dumps(saved,ensure_ascii=False),))
         # An interrupted send is deliberately uncertain, never automatically replayed.
         c.execute("UPDATE requests SET state='uncertain' WHERE state='sending'")
 
@@ -107,7 +116,7 @@ def send_mail(payload, attachments, result, site):
         lines+=['','Cenový rozpis (Kč, neplátce DPH):']+[f'{k}: {v if v is not None else "Na dotaz"}' for k,v in result.items()]
         lines+=['Rozsah: '+(('1 podlaží','2 podlaží','3 podlaží','4 podlaží')[int(payload['size'])] if payload['building']=='house' and payload['size']!='custom' else ('Do 500 m²','Nad 500 do 1 000 m²','Nad 1 000 do 2 000 m²','Nad 2 000 do 3 000 m²')[int(payload['size'])] if payload['building']=='apartment' and payload['size']!='custom' else 'Individuální nabídka')]
         if result['travel'] is None:lines+=['Zaměření na dotaz, od '+str(site['pricing']['travelOnRequestFrom'])+' Kč; konečný součet není potvrzen.']
-        lines+=['PENB do '+('5' if payload['express'] else '10')+' pracovních dnů od potvrzení zakázky a kompletních podkladů.','Pasport samostatně na dotaz, do 30 dnů od zaměření.','Platba na fakturu; podmínky se potvrdí při objednávce.']
+        lines+=['PENB do '+('5' if payload['express'] else '10')+' pracovních dnů od potvrzení zakázky a kompletních podkladů.','Pasport samostatně na dotaz, do 30 dnů od zaměření.','Platba na fakturu se splatností 14 dnů od vystavení; okamžik vystavení se potvrdí při objednávce.']
     msg.set_content('\n'.join(lines))
     for name,mime,body in attachments:
         main,sub=mime.split('/');msg.add_attachment(body,maintype=main,subtype=sub,filename=name)
@@ -130,6 +139,16 @@ def attachment(name, body):
     if not valid:raise Invalid('Typ přílohy neodpovídá jejímu obsahu.')
     return name,mime,body
 
+def render_legal(text):
+    parts=[]
+    for paragraph in text.split('\n\n'):
+        heading,sep,body=paragraph.partition('\n')
+        if sep and len(heading)<=110:
+            parts.append('<h2>'+html.escape(heading)+'</h2><p>'+html.escape(body).replace('\n','<br>')+'</p>')
+        else:
+            parts.append('<p>'+html.escape(paragraph).replace('\n','<br>')+'</p>')
+    return ''.join(parts)
+
 def render(route,site,rev):
     source=ROOT.joinpath('templates/site.html').read_text()
     source=re.sub(r'\{\{(\w+)\}\}',lambda m:html.escape(site['texts'].get(m[1],''),quote=True),source)
@@ -137,7 +156,7 @@ def render(route,site,rev):
     source=re.sub(r'<section class="page wrap" id="(uvod|penb|pasporty|dotazy|kontakty)"([^>]*)>',lambda m:'<section class="page wrap" id="'+m[1]+'"'+re.sub(r'\s+hidden','',m[2])+(' hidden' if route!=m[1] else '')+'>',source)
     legal=''
     for k,text in site['legal'].items():
-        legal+=f'<section class="page wrap" id="{k}"'+(' hidden' if route!=k else '')+'><div class="page-heading"><h1>'+html.escape(site['seo'][k]['title'].split(' | ')[0])+'</h1></div><article class="legal-copy">'+''.join('<p>'+html.escape(p).replace('\n','<br>')+'</p>' for p in text.split('\n\n'))+'</article></section>'
+        legal+=f'<section class="page wrap" id="{k}"'+(' hidden' if route!=k else '')+'><div class="page-heading"><h1>'+html.escape(site['seo'][k]['title'].split(' | ')[0])+'</h1></div><article class="legal-copy">'+render_legal(text)+'</article></section>'
     source=source.replace('@@LEGAL@@',legal)
     defaults=json.loads(ROOT.joinpath('content.default.json').read_text())['contacts']
     for key,value in site['contacts'].items():

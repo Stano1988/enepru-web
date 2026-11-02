@@ -38,8 +38,8 @@ HTML soubor, který lze poslat dál. Lokální server není veřejný náhled.
 6. Doplnit právní provozní údaje: hosting, pošta, retenční lhůty a mazání schránky
    a záloh. Zavést skutečný proces mazání. Registrační údaje pocházejí od majitele.
    Podmínky zkontrolovat pro konkrétní uzavírání smluv, zejména samostatnou žádost
-   o zahájení služby ve lhůtě pro odstoupení. Splatnost a fakturace předem/později
-   zůstávají na potvrzení zakázky, nejsou bez dohody vymyšlené.
+   o zahájení služby ve lhůtě pro odstoupení. Splatnost je podle korekce majitele 14 dnů od vystavení. Okamžik vystavení
+   a fakturace předem/později zůstávají na potvrzení zakázky.
 7. Zajistit pravidelné neveřejné zálohy mimo tento server a vyzkoušet obnovu.
 
 ## Správa a limity
@@ -58,3 +58,8 @@ Při nejistém přenosu se stejný požadavek automaticky neopakuje.
 
 GitHub je nezávislou zálohou pouze pro skutečně odeslané a následně ověřené commity.
 Provozní databáze, hesla a klientské podklady v repozitáři nejsou a být nemají.
+
+
+## Korekce 2. listopadu 2026
+
+Domeček je posazený na energetické čárky. Dokumenty se při otevření úvodu plynule objeví, stupnice u domu má výraznější průběžné zvýraznění. Omezení pohybu v zařízení se respektuje. PENB má obrázek dokumentace, pasporty a kontakty tematickou ilustraci pracovního stolu s měřicími pomůckami. Nový obrázek survey-workspace.webp vznikl pomocí AI, není stažený z cizího webu a je označen jako ilustrační. Původ starších obrázků ze zachráněného archivu před jeho vytvořením není ověřený. Právní stránky mají sémantické nadpisy; FAQ a podmínky uvádějí splatnost faktury 14 dnů od vystavení. Návod pro majitele: JAK-SPUSTIT-A-SPRAVOVAT.md.
