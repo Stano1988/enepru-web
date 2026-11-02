@@ -34,6 +34,10 @@ def initialize():
         # Add new editable captions, preserve owner changes, migrate unchanged payment copy.
         extra={k:v for k,v in defaults['texts'].items() if k not in saved['texts']}
         changed=bool(extra);saved['texts'].update(extra)
+        prior_captions={'image_penb_alt': 'Ilustrační průkaz energetické náročnosti budovy s barevnou stupnicí a dokumentace stavby', 'image_penb_caption': 'PENB přehledně zachytí energetickou náročnost budovy. Ilustrační náhled dokumentace.', 'image_survey_alt': 'Pracovní stůl s půdorysem stavby, laserovým dálkoměrem a podklady pro zaměření', 'image_survey_caption': 'Od zaměření ke zjednodušené dokumentaci skutečného stavu. Ilustrační obrázek vytvořený pomocí AI.'}
+        for key,old_copy in prior_captions.items():
+            if saved['texts'].get(key)==old_copy and defaults['texts'][key]!=old_copy:
+                saved['texts'][key]=defaults['texts'][key];changed=True
         if saved['texts'].get('text_0239')=='Za PENB vystavíme fakturu. Platební podmínky a splatnost vám potvrdíme při domluvě zakázky. Termín zpracování se počítá od potvrzení zakázky a dodání kompletních podkladů. Nejsme plátci DPH.':
             saved['texts']['text_0239']=defaults['texts']['text_0239'];changed=True
         if 'Okamžik vystavení, splatnost a případné zálohy budou dohodnuty v potvrzení zakázky; tento web je neurčuje.' in saved['legal']['podminky']:
@@ -172,7 +176,7 @@ def render(route,site,rev):
     domain=os.environ.get('PUBLIC_ORIGIN','').rstrip('/')
     if domain:
         source=source.replace('</head>','<link rel="canonical" href="'+html.escape(domain+('/' if route=='uvod' else '/'+route),quote=True)+'"></head>')
-    source=source.replace('</body>','<script src="/site-data.js"></script><script src="/static/navigation.js"></script><script src="/static/calculator.js"></script><script src="/static/forms.js"></script></body>')
+    source=source.replace('</body>','<script src="/site-data.js"></script><script src="/static/navigation.js"></script><script src="/static/hero-reveal.js"></script><script src="/static/calculator.js"></script><script src="/static/forms.js"></script></body>')
     return source
 
 class Handler(BaseHTTPRequestHandler):

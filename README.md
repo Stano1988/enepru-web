@@ -150,3 +150,6 @@ Stav předání a nevyřešené provozní kroky: `PREDANI.md`.
 Návod pro majitele bez technických detailů: [JAK-SPUSTIT-A-SPRAVOVAT.md](JAK-SPUSTIT-A-SPRAVOVAT.md).
 Splatnost faktury je podle potvrzení majitele 14 dnů od vystavení.
 Nový obrázek pracovního stolu v pasportech a kontaktech je AI ilustrace bez domu v pozadí; původní obrázky byly převzaté z uživatelské zálohy, jejich dřívější původ není ověřen.
+
+Vizuální testy po korekcích: `python3 tests/visual_corrections.py` ověřuje především
+polohu domečku, jednorázovou animaci, pravé čtvercové obrázky a omezení pohybu.

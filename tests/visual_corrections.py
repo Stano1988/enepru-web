@@ -11,18 +11,23 @@ with tempfile.TemporaryDirectory() as temp:
   page.goto(origin+'/');page.wait_for_timeout(100)
   assert page.locator('.real-documents').evaluate("e=>getComputedStyle(e).animationName")=='documents-arrive'
   start=page.locator('.real-documents').evaluate("e=>Number(getComputedStyle(e).opacity)")
-  page.wait_for_timeout(1800);end=page.locator('.real-documents').evaluate("e=>Number(getComputedStyle(e).opacity)");assert end>start and end>.99,(start,end)
+  page.wait_for_timeout(2000);end=page.locator('.real-documents').evaluate("e=>Number(getComputedStyle(e).opacity)");assert end>start and end>.99,(start,end)
+  page.get_by_role('link',name='PENB',exact=True).click();page.get_by_role('link',name='Úvod',exact=True).click();assert page.locator('.real-documents').evaluate("e=>getComputedStyle(e).animationName")=='none'
+  assert page.locator('#uvod .hero-copy > .eyebrow').count()==0
   a=page.locator('.energy-level').first.evaluate("e=>getComputedStyle(e).filter");page.wait_for_timeout(1000);b=page.locator('.energy-level').first.evaluate("e=>getComputedStyle(e).filter");assert a!=b,(a,b)
   for width in (390,1440):
    page.set_viewport_size({'width':width,'height':1000})
    difference=page.locator('header .personal-brand').evaluate("e=>{const svg=e.querySelector('svg');const p=svg.createSVGPoint();p.x=35;p.y=61;return p.matrixTransform(svg.getScreenCTM()).y-e.querySelector('.brand-spectrum').getBoundingClientRect().top}")
    assert abs(difference)<2,(width,difference)
+   roof_gap=page.locator('header .personal-brand').evaluate("e=>{const svg=e.querySelector('svg');const p=svg.createSVGPoint();p.x=35;p.y=7;return p.matrixTransform(svg.getScreenCTM()).y-e.querySelector('.person-name').getBoundingClientRect().top}");assert abs(roof_gap)<15,(width,roof_gap)
   page.screenshot(path='/workspace/korekce-uvod.png',full_page=True)
   page.goto(origin+'/gdpr');assert page.locator('#gdpr .legal-copy h2').count()>=6
   page.goto(origin+'/podminky');assert page.locator('#podminky .legal-copy h2').count()>=6;expect(page.locator('#podminky')).to_contain_text('Faktura má splatnost 14 dnů')
   page.goto(origin+'/dotazy');expect(page.locator('#dotazy')).to_contain_text('splatností 14 dnů')
   for route in ('penb','pasporty','kontakty'):
    page.goto(origin+'/'+route);image=page.locator('#'+route+' .topic-visual img');expect(image).to_be_visible();assert image.evaluate('e=>e.complete && e.naturalWidth>0');page.screenshot(path='/workspace/korekce-'+route+'.png',full_page=True)
+   frame=page.locator('#'+route+' .topic-visual').bounding_box();assert frame['width']<=335,frame
+   assert image.evaluate('e=>Math.abs(e.getBoundingClientRect().width-e.getBoundingClientRect().height)<2')
   reduced=browser.new_context(reduced_motion='reduce');pg=reduced.new_page();pg.goto(origin+'/');assert pg.locator('.real-documents').evaluate('e=>getComputedStyle(e).animationName')=='none';assert pg.locator('.energy-level').first.evaluate('e=>getComputedStyle(e).animationName')=='none';browser.close()
  server.shutdown();server.server_close()
 print('PASS: house baseline on spectrum at mobile/desktop, visible document reveal and changing energy highlight, reduced motion, legal headings, 14-day payment and 3 section images.')

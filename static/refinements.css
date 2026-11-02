@@ -25,3 +25,34 @@
 @media(max-width:700px){.personal-brand{padding-left:66px;min-height:109px;padding-bottom:15px}.personal-brand .brand-house,.personal-brand .brand-house svg{width:58px;height:58px}.personal-brand .brand-house{bottom:14px}.personal-brand .brand-spectrum{width:100%;margin:0}.penb-topic{display:block}.penb-topic img{height:250px;padding:15px}.penb-topic figcaption{font-size:15px;padding:16px 20px}.topic-visual img{height:250px}.topic-visual{margin-bottom:26px}.topic-visual figcaption{font-size:12px}.legal-copy h2{font-size:21px}}
 @media(prefers-reduced-motion:reduce){.estate-visual .real-documents,.house-photo-frame .energy-level,.house-photo-frame .house-light,.brand-house .window{animation:none!important;opacity:1!important;transform:none!important;filter:none!important}}
 .personal-brand .brand-house{bottom:3px}@media(max-width:700px){.personal-brand .brand-house{bottom:4.5px}}
+/* Right-side editorial images and a clearer path to the calculator. */
+.personal-brand{padding-left:116px;min-height:122px}
+.personal-brand .brand-house,.personal-brand .brand-house svg{width:110px;height:110px}
+.personal-brand .brand-house{bottom:-2.15px}
+.price-invitation{padding:18px 20px 15px;background:#f3e4d7;border:1px solid #ddbaa0;border-radius:10px;box-shadow:0 8px 24px #7443210a;max-width:100%}
+.price-invitation-title{font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin:0 0 10px;color:#734124}
+.hero-actions{align-items:center;flex-wrap:wrap;gap:18px}
+.hero-actions .price-cta{padding:19px 25px;background:#a34b28;font-size:17px;font-weight:700;box-shadow:0 5px 0 #77361e;gap:25px;min-height:62px}
+.hero-actions .price-cta:hover{background:#853a1d;transform:translateY(-2px)}
+.price-invitation-note{font-size:11px;line-height:1.6;color:#655747;margin:12px 0 0;max-width:270px}
+.page-intro{display:grid;grid-template-columns:minmax(0,1fr) 330px;align-items:center;gap:55px;padding:45px 0 36px}
+.page-intro .page-heading{max-width:none;padding:0}
+.page-intro .topic-visual{display:block;width:330px;margin:0;max-width:100%;border-radius:13px;background:#f2ece3;box-shadow:0 12px 28px #253b500a;justify-self:end}
+.page-intro .topic-visual img{display:block;width:100%;height:auto;aspect-ratio:1;object-fit:cover;padding:0;max-width:100%}
+.page-intro .penb-topic img{object-fit:contain;background:#f4eee5}
+.page-intro .topic-visual figcaption{font-size:11px;line-height:1.65;padding:12px 15px;background:#f3eee6}
+.page-heading .eyebrow{display:inline-block;letter-spacing:1.15px;font-size:10px;background:#eee1d4;padding:8px 12px;border-radius:5px;color:#854a2b}
+main .penb-explainer h2,main .simple-card h2,main .documents h2,main .passport-request>div>h2,main .contact-form h2{background:#eaf0f2;border-left:4px solid #b26941;padding:13px 17px;border-radius:0 7px 7px 0}
+main .legal-copy h2{background:#edf1f3;border-left:4px solid #b26941;border-bottom:0;border-radius:0 7px 7px 0;padding:14px 18px}
+.faq-list details[open]{background:#f1ebe2;border-radius:8px;padding:20px}.faq-list summary{border-left:3px solid #c18962;padding-left:14px}
+.estate-visual .real-documents{animation:none!important;opacity:1;transform:none}
+.hero-reveal-first .estate-visual .real-documents{animation:documents-arrive 1.5s cubic-bezier(.18,.7,.25,1) .3s both!important}
+@media(max-width:1000px){.page-intro{grid-template-columns:minmax(0,1fr) 280px;gap:30px}.page-intro .topic-visual{width:280px}.personal-brand{padding-left:108px}.personal-brand .brand-house,.personal-brand .brand-house svg{width:100px;height:100px}.personal-brand .brand-house{bottom:-.85px}}
+@media(max-width:700px){.personal-brand{padding-left:98px;min-height:118px}.personal-brand .brand-house,.personal-brand .brand-house svg{width:90px;height:90px}.personal-brand .brand-house{bottom:.43px}.page-intro{grid-template-columns:minmax(0,1fr) 230px;gap:24px;padding:30px 0}.page-intro .topic-visual{width:230px}.page-intro h1{font-size:32px}.page-intro .page-heading p{font-size:13px}.hero-actions .price-cta{font-size:16px;padding:17px 21px}.price-invitation{padding:16px}.hero-actions{align-items:flex-start}.price-invitation-note{font-size:11px}}
+@media(max-width:540px){.personal-brand .person-name{font-size:22px}.personal-brand .person-services{font-size:9px}.page-intro{grid-template-columns:1fr;gap:20px}.page-intro .topic-visual{width:220px;justify-self:end}.page-intro h1{font-size:36px}.page-intro .page-heading p{font-size:14px}.hero-actions{flex-direction:column;align-items:flex-start}.hero-actions .text-link{font-size:13px}.price-invitation-title{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.hero-reveal-first .estate-visual .real-documents{animation:none!important;opacity:1;transform:none}}
+.personal-brand{padding-left:136px;min-height:106px}.personal-brand .brand-house,.personal-brand .brand-house svg{width:128px;height:128px}.personal-brand .brand-house{bottom:-4.46px}
+@media(max-width:1000px){.personal-brand{padding-left:130px;min-height:106px}.personal-brand .brand-house,.personal-brand .brand-house svg{width:122px;height:122px}.personal-brand .brand-house{bottom:-3.69px}}
+@media(max-width:700px){.personal-brand{padding-left:120px;min-height:106px}.personal-brand .brand-house,.personal-brand .brand-house svg{width:112px;height:112px}.personal-brand .brand-house{bottom:-2.4px}}
+@media(max-width:540px){.personal-brand{padding-left:118px;min-height:102px}.personal-brand .person-name{font-size:20px}.personal-brand .brand-house,.personal-brand .brand-house svg{width:110px;height:110px}.personal-brand .brand-house{bottom:-2.14px}}
+main #contact-form h2{background:#eaf0f2;border-left:4px solid #b26941;padding:13px 17px;border-radius:0 7px 7px 0}

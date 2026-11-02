@@ -345,12 +345,14 @@
     "text_0343": "Středočeský",
     "text_0344": "Praha",
     "text_0345": "Ing. Stanislav Lahodný – PENB a pasporty staveb",
-    "image_penb_alt": "Ilustrační průkaz energetické náročnosti budovy s barevnou stupnicí a dokumentace stavby",
-    "image_penb_caption": "PENB přehledně zachytí energetickou náročnost budovy. Ilustrační náhled dokumentace.",
-    "image_survey_alt": "Pracovní stůl s půdorysem stavby, laserovým dálkoměrem a podklady pro zaměření",
-    "image_survey_caption": "Od zaměření ke zjednodušené dokumentaci skutečného stavu. Ilustrační obrázek vytvořený pomocí AI.",
+    "image_penb_alt": "Dvě ilustrační strany PENB s energetickou stupnicí a vzorovým razítkem energetického specialisty, oprávnění 2321",
+    "image_penb_caption": "Ukázka přední a zadní strany průkazu energetické náročnosti budovy.",
+    "image_survey_alt": "Starší rodinný dům, půdorys a měřicí pomůcky pro zaměření skutečného stavu",
+    "image_survey_caption": "Zaměření stávajícího domu jako podklad pro pasport. Ilustrační obrázek vytvořený pomocí AI.",
     "image_contact_alt": "Architektonické podklady a měřicí pomůcky na pracovním stole",
-    "image_contact_caption": "Pro první domluvu stačí popsat nemovitost a poslat dostupné podklady. Ilustrační obrázek vytvořený pomocí AI."
+    "image_contact_caption": "Pro první domluvu stačí popsat nemovitost a poslat dostupné podklady. Ilustrační obrázek vytvořený pomocí AI.",
+    "cta_invitation": "Vyzkoušejte kalkulačku PENB",
+    "cta_note": "Cenu uvidíte hned · nezávazně a bez zadávání kontaktu"
   },
   "ui": {
     "ui_basement": "Máte sklep? Připočítejte k nadzemním podlažím ještě jedno podlaží. Například přízemí + patro + sklep = 3 podlaží.",

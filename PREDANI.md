@@ -63,3 +63,14 @@ Provozní databáze, hesla a klientské podklady v repozitáři nejsou a být ne
 ## Korekce 2. listopadu 2026
 
 Domeček je posazený na energetické čárky. Dokumenty se při otevření úvodu plynule objeví, stupnice u domu má výraznější průběžné zvýraznění. Omezení pohybu v zařízení se respektuje. PENB má obrázek dokumentace, pasporty a kontakty tematickou ilustraci pracovního stolu s měřicími pomůckami. Nový obrázek survey-workspace.webp vznikl pomocí AI, není stažený z cizího webu a je označen jako ilustrační. Původ starších obrázků ze zachráněného archivu před jeho vytvořením není ověřený. Právní stránky mají sémantické nadpisy; FAQ a podmínky uvádějí splatnost faktury 14 dnů od vystavení. Návod pro majitele: JAK-SPUSTIT-A-SPRAVOVAT.md.
+
+
+## Další vizuální korekce 2. listopadu 2026
+
+Domeček je zvětšený přibližně k horní hraně jména a dál stojí na energetických čárkách. Opakovaný hnědý popisek nad sloganem byl odstraněn. Kalkulačka má výraznou výzvu a tlačítko s informací, že výpočet nevyžaduje kontakt. PENB, pasporty i kontakty mají kompaktní čtvercový obrázek vpravo, na úzkém mobilu pod textem zarovnaný vpravo. Podnadpisy doplnil světlý barevný podklad s měděnou linkou.
+
+Dokumenty se objeví jednou za otevření dokumentu/prohlížečové stránky; návrat přes navigaci animaci neopakuje. Omezení pohybu zařízení zůstává respektované.
+
+Nové obrázky PENB a zaměření jsou vytvořené pomocí AI. PENB ukazuje dvě strany s nevyplněnými údaji a grafickým razítkem se jménem a oprávněním 2321; obrázek není skutečně vydaný či elektronicky autorizovaný průkaz. Velký nápis přes stránky byl na přání odstraněn, pod obrázkem je uvedeno „Ukázka“. Razítko je podle uživatelského vzoru červené, bez žlutého zvýraznění. Pokus o ověření veřejných materiálů MPO z tohoto prostředí skončil blokací přístupu; přesnou aktuální úřední podobu dokumentu ani razítka tímto nenárokujeme. Obrázky jsou pro prezentaci, pro skutečné zakázky se používá skutečný autorizovaný výstup.
+
+Fotografie zaměření byla nahrazena ostřejší verzí s hlubší ostrostí a nové obrázky se ukládají do WebP bezztrátově. Originální PNG razítka lze stáhnout samostatně.

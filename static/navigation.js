@@ -6,6 +6,7 @@
   document.querySelectorAll('main > .page').forEach(s=>s.hidden=s.id!==route);
   document.querySelectorAll('.header nav a').forEach(a=>{if(a.pathname===location.pathname)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
   if(window.SITE?.seo[route]) {document.title=SITE.seo[route].title;document.querySelector('meta[name="description"]').content=SITE.seo[route].description;}
+  document.dispatchEvent(new CustomEvent('site:routechange',{detail:{route}}));
   const canonical=document.querySelector('link[rel=canonical]');if(canonical)canonical.href=location.origin+location.pathname;
   if(location.hash)document.getElementById(location.hash.slice(1))?.scrollIntoView();else scrollTo(0,0);
  }
