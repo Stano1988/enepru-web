@@ -29,7 +29,7 @@
      SITE.pricing=result.pricing;document.dispatchEvent(new CustomEvent('pricing-update'));requestId=undefined;
     }
     if(!response.ok||!result.ok)throw Error(result.error||SITE.ui.ui_send_error);
-    confirmed=true;status.textContent=SITE.ui.ui_send_success;button.textContent=SITE.ui.ui_send_sent;
+    confirmed=true;status.textContent=result.queued?'Poptávku jsme bezpečně uložili. Po obnovení spojení ji doručíme ke zpracování.':SITE.ui.ui_send_success;button.textContent=result.queued?'Poptávka přijata':SITE.ui.ui_send_sent;
    }catch(err){status.textContent=err.message||SITE.ui.ui_send_error;}
    finally{controls.forEach(c=>c.disabled=false);form.dataset.sending='false';button.disabled=confirmed;}
   });

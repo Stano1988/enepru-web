@@ -19,7 +19,8 @@
   if(tab==='stats'){
    const p=document.createElement('p');p.textContent='Souhrnná zobrazení stránek při jejich načtení ze serveru. Nejde o unikátní návštěvníky; přechody uvnitř již otevřené stránky se nezapočítávají. DNT a GPC respektujeme.';$('#editor').append(p);
    const response=await fetch('/api/admin/stats');if(!response.ok){$('#status').textContent='Relace vypršela. Přihlaste se znovu.';return;}
-   const table=document.createElement('table');for(const row of [['Den (UTC)','Stránka','Zobrazení'],...(await response.json()).views]){const tr=document.createElement('tr');for(const cell of row){const td=document.createElement('td');td.textContent=cell;tr.append(td);}table.append(tr);}$('#editor').append(table);
+   const stats=await response.json();const queue=document.createElement('p');queue.textContent=`Čeká na přenos do CRM: ${stats.pendingCRM}. E-maily s nejistým doručením: ${stats.uncertainMail}.`;$('#editor').append(queue);
+   const table=document.createElement('table');for(const row of [['Den (UTC)','Stránka','Zobrazení'],...stats.views]){const tr=document.createElement('tr');for(const cell of row){const td=document.createElement('td');td.textContent=cell;tr.append(td);}table.append(tr);}$('#editor').append(table);
   }else walk(data[tab]);
  }
  document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;draw();});

@@ -1,6 +1,8 @@
 """PENB website. Python 3.12+, standard library only. Run behind a TLS reverse proxy."""
+import uuid
 import argparse, base64, collections, hashlib, hmac, html, http.cookies, io, ipaddress, json, os, re, secrets, smtplib, sqlite3, ssl, threading, time, zipfile
 from email.message import EmailMessage
+import crm_bridge
 from email import policy
 from email.parser import BytesParser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -25,6 +27,7 @@ def db():
 def initialize():
     DATA.mkdir(parents=True,exist_ok=True,mode=0o700)
     with db() as c:
+        c.execute('CREATE TABLE IF NOT EXISTS crm_pending(id TEXT PRIMARY KEY,body TEXT NOT NULL,next_attempt INTEGER NOT NULL,attempts INTEGER NOT NULL DEFAULT 0)')
         c.executescript('CREATE TABLE IF NOT EXISTS content(id INTEGER PRIMARY KEY CHECK(id=1), revision INTEGER NOT NULL, body TEXT NOT NULL); CREATE TABLE IF NOT EXISTS auth(id INTEGER PRIMARY KEY CHECK(id=1),salt TEXT,hash TEXT); CREATE TABLE IF NOT EXISTS requests(id TEXT PRIMARY KEY, fingerprint TEXT NOT NULL, state TEXT NOT NULL, created INTEGER NOT NULL); CREATE TABLE IF NOT EXISTS views(day TEXT,page TEXT,count INTEGER, PRIMARY KEY(day,page));')
         c.execute('INSERT OR IGNORE INTO content VALUES(1,1,?)',(ROOT.joinpath('content.default.json').read_text(),))
         saved_rev,saved_body=c.execute('SELECT revision,body FROM content WHERE id=1').fetchone()
@@ -46,6 +49,7 @@ def initialize():
             c.execute('UPDATE content SET revision=revision+1,body=? WHERE id=1',(json.dumps(saved,ensure_ascii=False),))
         # An interrupted send is deliberately uncertain, never automatically replayed.
         c.execute("UPDATE requests SET state='uncertain' WHERE state='sending'")
+        c.execute("UPDATE requests SET state='queued' WHERE id IN (SELECT id FROM crm_pending) AND state IN ('uncertain','sending')")
 
 def content():
     with db() as c: rev,body=c.execute('SELECT revision,body FROM content WHERE id=1').fetchone()
@@ -122,6 +126,11 @@ def send_mail(payload, attachments, result, site):
         if result['travel'] is None:lines+=['Zaměření na dotaz, od '+str(site['pricing']['travelOnRequestFrom'])+' Kč; konečný součet není potvrzen.']
         lines+=['PENB do '+('5' if payload['express'] else '10')+' pracovních dnů od potvrzení zakázky a kompletních podkladů.','Pasport samostatně na dotaz, do 30 dnů od zaměření.','Platba na fakturu se splatností 14 dnů od vystavení; okamžik vystavení se potvrdí při objednávce.']
     msg.set_content('\n'.join(lines))
+    encoded=crm_bridge.envelope(payload,result,attachments)
+    signature=crm_bridge.sign_email(encoded)
+    msg['X-CRM-Source']=os.environ.get('CRM_SOURCE_SLUG','enepru')
+    if signature:msg['X-CRM-Mail-Signature']=signature
+    msg.add_attachment(encoded,maintype='application',subtype='vnd.enepru.inquiry+json',filename=crm_bridge.FILENAME)
     for name,mime,body in attachments:
         main,sub=mime.split('/');msg.add_attachment(body,maintype=main,subtype=sub,filename=name)
     context=ssl.create_default_context();mode=os.environ.get('SMTP_MODE','starttls')
@@ -224,7 +233,7 @@ class Handler(BaseHTTPRequestHandler):
             if not p.is_file():return self.reply(404,'Nenalezeno')
             mime={'.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.webp':'image/webp'}.get(p.suffix,'application/octet-stream')
             return self.reply(200,p.read_bytes(),mime)
-        if path=='/api/status':return self.json(200,{'canSend':smtp_ready() and self.secure()})
+        if path=='/api/status':return self.json(200,{'canSend':(smtp_ready() or crm_bridge.ready()) and self.secure()})
         if path=='/site-data.js':
             rev,site=content();public={k:site[k] for k in ('pricing','ui','seo','mapBands')};public['revision']=rev
             return self.reply(200,'window.SITE='+json.dumps(public,ensure_ascii=True).replace('<','\\u003c')+';','text/javascript; charset=utf-8')
@@ -244,8 +253,11 @@ class Handler(BaseHTTPRequestHandler):
             if path=='/api/admin/content':
                 rev,site=content();return self.json(200,{'revision':rev,'content':site,'csrf':session['csrf']})
             if path=='/api/admin/stats':
-                with db() as c:rows=c.execute('SELECT day,page,count FROM views ORDER BY day DESC,page LIMIT 500').fetchall()
-                return self.json(200,{'views':rows})
+                with db() as c:
+                    rows=c.execute('SELECT day,page,count FROM views ORDER BY day DESC,page LIMIT 500').fetchall()
+                    pending=c.execute('SELECT COUNT(*) FROM crm_pending').fetchone()[0]
+                    uncertain=c.execute("SELECT COUNT(*) FROM requests WHERE state='uncertain'").fetchone()[0]
+                return self.json(200,{'views':rows,'pendingCRM':pending,'uncertainMail':uncertain})
             if path=='/api/admin/export':
                 rev,site=content();return self.json(200,{'revision':rev,'content':site}, {'Content-Disposition':'attachment; filename="obsah-zaloha.json"'})
             return self.json(404,{'error':'Nenalezeno'})
@@ -272,7 +284,7 @@ class Handler(BaseHTTPRequestHandler):
             if not self.secure():return self.json(403,{'error':'Poptávky přijímáme pouze přes HTTPS.'})
             if not self.origin_ok():return self.json(403,{'error':'Nepovolený původ požadavku.'})
             if not throttle(('enquiry',self.client_address[0]),8,600):return self.json(429,{'error':'Příliš mnoho požadavků. Zkuste to později.'})
-            if not smtp_ready():return self.json(503,{'error':'Odesílání není nakonfigurované. Zavolejte nebo napište přímo e-mailem.'})
+            if not (smtp_ready() or crm_bridge.ready()):return self.json(503,{'error':'Odesílání není nakonfigurované. Zavolejte nebo napište přímo e-mailem.'})
             ct=self.headers.get('Content-Type','')
             if not ct.startswith('multipart/form-data;'):raise Invalid('Použijte formulář s přílohami.')
             raw=self.read_body(17*1024*1024)
@@ -301,6 +313,8 @@ class Handler(BaseHTTPRequestHandler):
             if kind=='contact' and (not payload['notes'] or files):raise Invalid('Vyplňte dotaz bez příloh.')
             request_id=payload.get('requestId','')
             if not isinstance(request_id,str) or not re.fullmatch(r'[a-fA-F0-9-]{36}',request_id):raise Invalid('Neplatný identifikátor odeslání.')
+            try:uuid.UUID(request_id)
+            except ValueError:raise Invalid('Neplatný identifikátor odeslání.')
             rev,site=content();result=None
             if kind=='penb':
                 result=quote(site['pricing'],payload)
@@ -308,18 +322,31 @@ class Handler(BaseHTTPRequestHandler):
                     return self.json(409,{'error':'Ceník nebo kalkulace se změnily. Zkontrolujte novou cenu a odešlete znovu.','pricing':site['pricing']})
             fingerprint=hashlib.sha256(json.dumps(payload,sort_keys=True).encode()+b''.join(hashlib.sha256(f[2]).digest()+f[0].encode() for f in files)).hexdigest()
             with LOCK, db() as c:
-                c.execute('DELETE FROM requests WHERE created<?',(int(time.time())-7*86400,))
+                c.execute('DELETE FROM requests WHERE created<? AND id NOT IN (SELECT id FROM crm_pending)',(int(time.time())-7*86400,))
                 row=c.execute('SELECT fingerprint,state FROM requests WHERE id=?',(request_id,)).fetchone()
                 if row:
                     if row[0]!=fingerprint:raise Invalid('Identifikátor byl použit pro jiný obsah.')
                     if row[1]=='sent':return self.json(200,{'ok':True})
+                    if row[1]=='queued':return self.json(202,{'ok':True,'queued':True})
                     return self.json(409,{'error':'Tato poptávka se již odesílá nebo je její doručení nejisté. Neodesílejte ji opakovaně; kontaktujte nás přímo.'})
                 c.execute('INSERT INTO requests VALUES(?,?,?,?)',(request_id,fingerprint,'sending',int(time.time())))
-            try:send_mail(payload,files,result,site)
+                if crm_bridge.ready():c.execute('INSERT INTO crm_pending VALUES(?,?,?,0)',(request_id,crm_bridge.pending_body(payload,files,result),int(time.time())+60))
+            try:
+                if crm_bridge.ready():
+                    try:crm_bridge.send(payload,files,result)
+                    except Exception:
+                        if not smtp_ready():raise
+                        send_mail(payload,files,result,site)
+                else:send_mail(payload,files,result,site)
             except Exception:
+                if crm_bridge.ready():
+                    with db() as c:c.execute("UPDATE requests SET state='queued' WHERE id=?",(request_id,))
+                    return self.json(202,{'ok':True,'queued':True})
                 with db() as c:c.execute("UPDATE requests SET state='uncertain' WHERE id=?",(request_id,))
                 return self.json(502,{'error':'Poštovní služba nepotvrdila přijetí. Doručení je nejisté, neopakujte odeslání; kontaktujte nás přímo.'})
-            with db() as c:c.execute("UPDATE requests SET state='sent' WHERE id=?",(request_id,))
+            with db() as c:
+                c.execute("UPDATE requests SET state='sent' WHERE id=?",(request_id,))
+                c.execute('DELETE FROM crm_pending WHERE id=?',(request_id,))
             return self.json(200,{'ok':True})
         if path.startswith('/api/admin/'):
             if not self.admin_allowed() or not self.origin_ok():return self.json(403,{'error':'Vyžadováno HTTPS a stejný původ.'})
@@ -361,6 +388,12 @@ def main():
         print('Heslo bezpečně nastaveno.');return
     origin=os.environ.get('PUBLIC_ORIGIN','')
     if origin and (not origin.startswith('https://') or urlsplit(origin).path not in ('','/') or urlsplit(origin).username):raise SystemExit('PUBLIC_ORIGIN musí být HTTPS origin bez cesty.')
+    def retry_loop():
+        while True:
+            try:crm_bridge.retry_pending(db,LOCK)
+            except Exception:print('Fronta CRM: kontrola se nezdařila, zůstává uložená pro další pokus.',flush=True)
+            time.sleep(30)
+    threading.Thread(target=retry_loop,daemon=True).start()
     server=ThreadingHTTPServer((args.bind,args.port),Handler)
     print(f'Server běží na portu {args.port}. Produkční odesílání vyžaduje HTTPS a SMTP.',flush=True)
     server.serve_forever()
