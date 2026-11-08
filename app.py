@@ -44,6 +44,13 @@ def initialize():
             saved['legal']['podminky']=saved['legal']['podminky'].replace('Okamžik vystavení, splatnost a případné zálohy budou dohodnuty v potvrzení zakázky; tento web je neurčuje.','Faktura má splatnost 14 dnů od vystavení. Okamžik vystavení a případné zálohy budou dohodnuty v potvrzení zakázky.');changed=True
         if changed:
             c.execute('UPDATE content SET revision=revision+1,body=? WHERE id=1',(json.dumps(saved,ensure_ascii=False),))
+        prior_intro={'text_0015': 'Dokumenty k domu.', 'text_0017': 'Potřebujete energetický průkaz nebo chybějící dokumentaci k domu? Připravím PENB i pasport stavby. Cenu průkazu zjistíte předem; pokud při prodeji či pronájmu nemáte podklady, přijedu zaměřit.'}
+        intro_changed=False
+        for key,previous in prior_intro.items():
+            if saved['texts'].get(key)==previous:
+                saved['texts'][key]=defaults['texts'][key];intro_changed=True
+        if intro_changed:
+            c.execute('UPDATE content SET revision=revision+1,body=? WHERE id=1',(json.dumps(saved,ensure_ascii=False),))
         # An interrupted send is deliberately uncertain, never automatically replayed.
         c.execute("UPDATE requests SET state='uncertain' WHERE state='sending'")
 

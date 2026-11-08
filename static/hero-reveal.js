@@ -12,7 +12,7 @@
   const complete=()=>home.classList.remove('hero-reveal-first');
   documents?.addEventListener('animationend',complete,{once:true});
   // Also completes when the user leaves the page mid-animation or reduces motion.
-  setTimeout(complete,2200);
+  setTimeout(complete,5000);
  }
  document.addEventListener('site:routechange',reveal);
  reveal();

@@ -74,3 +74,12 @@ Dokumenty se objeví jednou za otevření dokumentu/prohlížečové stránky; n
 Nové obrázky PENB a zaměření jsou vytvořené pomocí AI. PENB ukazuje dvě strany s nevyplněnými údaji a grafickým razítkem se jménem a oprávněním 2321; obrázek není skutečně vydaný či elektronicky autorizovaný průkaz. Velký nápis přes stránky byl na přání odstraněn, pod obrázkem je uvedeno „Ukázka“. Razítko je podle uživatelského vzoru červené, bez žlutého zvýraznění. Pokus o ověření veřejných materiálů MPO z tohoto prostředí skončil blokací přístupu; přesnou aktuální úřední podobu dokumentu ani razítka tímto nenárokujeme. Obrázky jsou pro prezentaci, pro skutečné zakázky se používá skutečný autorizovaný výstup.
 
 Fotografie zaměření byla nahrazena ostřejší verzí s hlubší ostrostí a nové obrázky se ukládají do WebP bezztrátově. Originální PNG razítka lze stáhnout samostatně.
+
+
+## Změna úvodu 8. listopadu 2026
+
+H1 a H2 úvodní stránky byly nahrazeny přesným zněním dodaným majitelem; upravena je také typografie pro mobil a SEO titulek a popis. Silná reklamní tvrzení „nejnižší možná cena“, „certifikovaný ... MPO“ a garance rychlosti pocházejí od majitele, nejsou tímto nasazením nezávisle doložena. V ceníku zůstávají individuální případy na dotaz, standardní a expresní termíny mají původní podmínky.
+
+Z úvodu byl odstraněn i opakovaný podpis energetického specialisty pod výzvou ke kalkulačce; hlavička a kontakty zůstávají.
+
+Na přání je jednorázové objevení průkazu a pasportu zpomalené na 4 sekundy po krátké půlsekundové prodlevě; následně dokumenty zůstávají statické.

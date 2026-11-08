@@ -11,7 +11,7 @@ with tempfile.TemporaryDirectory() as temp:
   page.goto(origin+'/');page.wait_for_timeout(100)
   assert page.locator('.real-documents').evaluate("e=>getComputedStyle(e).animationName")=='documents-arrive'
   start=page.locator('.real-documents').evaluate("e=>Number(getComputedStyle(e).opacity)")
-  page.wait_for_timeout(2000);end=page.locator('.real-documents').evaluate("e=>Number(getComputedStyle(e).opacity)");assert end>start and end>.99,(start,end)
+  page.wait_for_timeout(4600);end=page.locator('.real-documents').evaluate("e=>Number(getComputedStyle(e).opacity)");assert end>start and end>.99,(start,end)
   page.get_by_role('link',name='PENB',exact=True).click();page.get_by_role('link',name='Úvod',exact=True).click();assert page.locator('.real-documents').evaluate("e=>getComputedStyle(e).animationName")=='none'
   assert page.locator('#uvod .hero-copy > .eyebrow').count()==0
   a=page.locator('.energy-level').first.evaluate("e=>getComputedStyle(e).filter");page.wait_for_timeout(1000);b=page.locator('.energy-level').first.evaluate("e=>getComputedStyle(e).filter");assert a!=b,(a,b)
