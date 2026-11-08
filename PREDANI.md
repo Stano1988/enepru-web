@@ -83,3 +83,12 @@ H1 a H2 úvodní stránky byly nahrazeny přesným zněním dodaným majitelem; 
 Z úvodu byl odstraněn i opakovaný podpis energetického specialisty pod výzvou ke kalkulačce; hlavička a kontakty zůstávají.
 
 Na přání je jednorázové objevení průkazu a pasportu zpomalené na 4 sekundy po krátké půlsekundové prodlevě; následně dokumenty zůstávají statické.
+
+
+## UX, texty a barevnost — 8. listopadu 2026
+
+Na přání majitele zapracovány nasbírané připomínky. Zvolena tmavomodrá, téměř bílá a tlumená šalvějová zelená namísto měděných akcentů; barevnost stupnice A–G zůstává zachovaná. Zelené plochy jsou světlé, důležitá tlačítka mají tmavší zelenou kvůli čitelnosti. Kalkulačka má zvýrazněný rámeček, stín, tři orientační kroky a větší ovládací prvky; na úzkém mobilu jsou typy staveb pod sebou.
+
+Nad kalkulačkou je popis ceny PENB se zaměřením při prodeji nebo pronájmu, s výslovnou výhradou krajů na dotaz. Úvod má karty standardního a expresního PENB, pasportu a ceny s ikonami. Termíny zachovávají své podmínky. Přidán blok pro realitní kanceláře a projektanty se zvýhodněnými cenami při pravidelné spolupráci a individuální dohodou; žádná provize ani automatická sleva se nenastavuje. Tlačítko vede na kontaktní formulář. Pasportová stránka vysvětluje, že samotný prodej bez plánů nezakládá automatickou povinnost pasportu.
+
+Texty bloků se dají měnit v administraci. Existující vlastní barvy krajů a upravené texty zůstávají zachované; aktualizuje se pouze známá výchozí barevná paleta. Cena, čtyřsekundová animace i předchozí úpravy úvodu zůstávají. Propojení s Google, nákup domény, placená reklama ani produkční nasazení se tímto neprováděly.

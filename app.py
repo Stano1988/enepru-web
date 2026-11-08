@@ -54,6 +54,13 @@ def initialize():
                 saved['texts'][key]=defaults['texts'][key];intro_changed=True
         if intro_changed:
             c.execute('UPDATE content SET revision=revision+1,body=? WHERE id=1',(json.dumps(saved,ensure_ascii=False),))
+        old_map_palette={'Vysočina': '#e9ddc9', 'Pardubický': '#d8c0a1', 'Jihomoravský': '#d8c0a1', 'Královéhradecký': '#c2a07a', 'Praha': '#af835e', 'Středočeský': '#af835e', 'Jihočeský': '#af835e', 'Olomoucký': '#af835e', 'Liberecký': '#af835e', 'Plzeňský': '#c0c9ce', 'Karlovarský': '#c0c9ce', 'Ústecký': '#c0c9ce', 'Moravskoslezský': '#c0c9ce', 'Zlínský': '#c0c9ce'}
+        palette_changed=False
+        for region,previous in old_map_palette.items():
+            if saved['mapBands'].get(region)==previous and defaults['mapBands'][region]!=previous:
+                saved['mapBands'][region]=defaults['mapBands'][region];palette_changed=True
+        if palette_changed:
+            c.execute('UPDATE content SET revision=revision+1,body=? WHERE id=1',(json.dumps(saved,ensure_ascii=False),))
         # An interrupted send is deliberately uncertain, never automatically replayed.
         c.execute("UPDATE requests SET state='uncertain' WHERE state='sending'")
         c.execute("UPDATE requests SET state='queued' WHERE id IN (SELECT id FROM crm_pending) AND state IN ('uncertain','sending')")
