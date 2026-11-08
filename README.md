@@ -160,3 +160,7 @@ Repozitář obsahuje také hotový `nahled.html`. Na GitHubu použijte Code → 
 archiv rozbalte a tento soubor otevřete v prohlížeči. Nemusíte instalovat Python,
 pokud chcete pouze procházet náhled. Soubor je nezávazný náhled s neaktivním
 odesíláním a bez administrace; kompletní serverová část je ve stejném archivu.
+
+## Napojení CRM
+
+Kód přenosu je v `crm_bridge.py`. Web může doručit poptávku přímo do veřejného HTTPS CRM (podepsané JSON s přílohami), nebo přes strukturovaný e-mail do CRM na PC. Nastavení a chování fronty při výpadku popisuje [CRM-INTEGRACE.md](CRM-INTEGRACE.md). Samotný commit není nasazení na živý hosting.

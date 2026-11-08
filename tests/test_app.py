@@ -89,7 +89,8 @@ class HTTP(unittest.TestCase):
     self.assertEqual(self.submit(p,files)[0],200)
     smtp.return_value.starttls.assert_called_once();ctx=smtp.return_value.starttls.call_args.kwargs['context'];self.assertTrue(ctx.check_hostname)
     mail=smtp.return_value.send_message.call_args.args[0];self.assertEqual(mail['Reply-To'],p['email']);self.assertEqual(mail['To'],'penb.lahodny@seznam.cz');text=mail.get_body(preferencelist=('plain',)).get_content();self.assertIn('Poznámka',text)
-    self.assertEqual(len(list(mail.iter_attachments())),len(files))
+    self.assertEqual(len([a for a in mail.iter_attachments() if a.get_filename()!='enepru-poptavka.json']),len(files))
+    meta=next(a for a in mail.iter_attachments() if a.get_filename()=='enepru-poptavka.json');self.assertEqual(json.loads(meta.get_payload(decode=True))['email'],p['email'])
     if kind=='penb':
      self.assertIn('14490',text);self.assertIn('3000',text);self.assertIn('Vysočina',text);self.assertIn('5 pracovních dnů',text)
     self.assertEqual(self.submit(p,files)[0],200);self.assertEqual(smtp.return_value.send_message.call_count,1)
@@ -103,6 +104,25 @@ class HTTP(unittest.TestCase):
   p=self.payload()
   with patch('app.smtplib.SMTP',side_effect=OSError('failure')):
    self.assertEqual(self.submit(p)[0],502);self.assertEqual(self.submit(p)[0],409)
+ def test_crm_only_delivery_and_retry_queue(self):
+  p=self.payload()
+  with patch.dict(os.environ,{'CRM_ENDPOINT':'https://crm.example.invalid/api/inquiries/enepru/','CRM_SHARED_SECRET':'test-contract-key','SMTP_PASSWORD':''}):
+   with patch('crm_bridge.send',side_effect=TimeoutError('test network')):
+    self.assertEqual(self.submit(p)[0],202)
+    self.assertEqual(self.submit(p)[0],202)
+   with app.db() as c:
+    self.assertEqual(c.execute('SELECT count(*) FROM crm_pending WHERE id=?',(p['requestId'],)).fetchone()[0],1)
+    c.execute('UPDATE crm_pending SET next_attempt=0 WHERE id=?',(p['requestId'],))
+   with patch('crm_bridge.send',return_value={'id':1}):self.assertEqual(app.crm_bridge.retry_pending(app.db,app.LOCK),1)
+   with app.db() as c:self.assertEqual(c.execute('SELECT state FROM requests WHERE id=?',(p['requestId'],)).fetchone()[0],'sent')
+ def test_crm_failure_falls_back_to_structured_email(self):
+  p=self.payload()
+  with patch.dict(os.environ,{'CRM_ENDPOINT':'https://crm.example.invalid/api/inquiries/enepru/','CRM_SHARED_SECRET':'test-contract-key'}),patch('crm_bridge.send',side_effect=TimeoutError),patch('app.smtplib.SMTP') as smtp:
+   smtp.return_value.__enter__.return_value=smtp.return_value;smtp.return_value.send_message.return_value={}
+   self.assertEqual(self.submit(p)[0],200)
+   mail=smtp.return_value.send_message.call_args.args[0]
+   self.assertTrue(mail['X-CRM-Mail-Signature'])
+   with app.db() as c:self.assertFalse(c.execute('SELECT 1 FROM crm_pending WHERE id=?',(p['requestId'],)).fetchone())
  def login(self):
   salt='ab'*16
   with app.db() as c:c.execute('INSERT OR REPLACE INTO auth VALUES(1,?,?)',(salt,app.password_hash('Long-test-password-123',salt)))
