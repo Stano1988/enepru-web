@@ -62,17 +62,22 @@ def initialize():
             'ux_express_copy': 'Příplatek dle kalkulačky. Od potvrzení zakázky a kompletních podkladů.',
         }
         previous_intro = {
-            'text_0015': ('Dokumenty k domu.', 'PENB a pasporty staveb', 'Prodáváte nebo pronajímáte?', 'Energetický průkaz pro vaši nemovitost'),
+            'text_0015': ('Dokumenty k domu.', 'PENB a pasporty staveb', 'Prodáváte nebo pronajímáte?', 'Energetický průkaz pro vaši nemovitost', 'Zpracuji vám energetický průkaz'),
             'text_0017': (
                 'Potřebujete energetický průkaz nebo chybějící dokumentaci k domu? Připravím PENB i pasport stavby. Cenu průkazu zjistíte předem; pokud při prodeji či pronájmu nemáte podklady, přijedu zaměřit.',
                 'Prodáváte nebo pronajímáte nemovitost? Zjistěte, kolik bude stát energetický průkaz. Zpracovávám PENB i pro novostavby a rekonstrukce.',
                 'Připravím vám energetický průkaz. Vyberte typ a velikost nemovitosti a hned zjistíte cenu. Pokud vám chybí plány, můžu stavbu přijet zaměřit.',
                 'Zpracuji PENB pro prodej, pronájem i stavební řízení. Pokud při prodeji nebo pronájmu chybí plány, můžu stavbu zaměřit.',
+                'Pro prodej, pronájem i stavební řízení. Pokud u prodeje nebo pronájmu chybí plány, můžu stavbu zaměřit.',
             ),
-            'text_0018': ('Zjistit cenu PENB',),
-            'cta_note': ('Kalkulace je nezávazná a bez zadání kontaktu.', 'Kalkulace bez zadání kontaktu.'),
-            'home_example_label': ('Příklad ceny PENB',),
-            'home_example_terms': ('Prodej nebo pronájem, kompletní podklady, bez zaměření a expresu.',),
+            'text_0018': ('Zjistit cenu PENB', 'Přejít do kalkulačky PENB'),
+            'cta_note': ('Kalkulace je nezávazná a bez zadání kontaktu.', 'Kalkulace bez zadání kontaktu.', 'V kalkulačce můžete vybrat i jiný typ stavby. Kontakt zadáte až u poptávky.'),
+            'home_example_label': ('Příklad ceny PENB', 'Cena v příkladu'),
+            'home_quote_heading': ('Kolik stojí PENB?',),
+            'home_example_terms': (
+                'Prodej nebo pronájem, kompletní podklady, bez zaměření a expresu.',
+                'Cena za standardní zpracování s kompletními podklady. V kalkulačce lze přidat zaměření nebo expres.',
+            ),
             'home_terms_heading': ('Jak dlouho trvá zpracování',),
             'home_plans_copy': (
                 'Při prodeji nebo pronájmu můžu stavbu pro PENB zaměřit. Pokud potřebujete nové výkresy, připravím pasport skutečného stavu.',
@@ -314,7 +319,7 @@ class Handler(BaseHTTPRequestHandler):
             if '/' in name or name.startswith('.') or not re.fullmatch(r'[\w.-]+',name):return self.reply(404,'Nenalezeno')
             p=ROOT/'static'/name
             if not p.is_file():return self.reply(404,'Nenalezeno')
-            mime={'.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.webp':'image/webp'}.get(p.suffix,'application/octet-stream')
+            mime={'.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.webp':'image/webp','.woff2':'font/woff2'}.get(p.suffix,'application/octet-stream')
             return self.reply(200,p.read_bytes(),mime)
         if path=='/api/status':return self.json(200,{'canSend':(smtp_ready() or crm_bridge.ready()) and self.secure()})
         if path=='/site-data.js':
