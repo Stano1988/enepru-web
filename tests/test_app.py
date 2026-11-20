@@ -25,8 +25,15 @@ class Prices(unittest.TestCase):
   for b in ('house','apartment','other'):
    d=self.data();d.update(building=b,size='custom');self.assertIsNone(app.quote(self.p,d)['total'])
   d=self.data();d['building']='other';self.p['other']['sale']=10000;self.assertEqual(app.quote(self.p,d)['total'],10000)
- def test_basement(self):
-  d=self.data();d['size']='2';self.assertEqual(app.quote(self.p,d)['total'],7490)
+ def test_house_area_bands(self):
+  for purpose, rates in self.p['house'].items():
+   for size, price in zip(app.HOUSE_AREA_SIZES, rates[:3]):
+    data = self.data()
+    data.update(purpose=purpose, size=size)
+    self.assertEqual(app.quote(self.p, data)['total'], price)
+  data.update(building='apartment')
+  with self.assertRaises(app.Invalid):
+   app.quote(self.p, data)
  def test_invalid(self):
   for changes in ({'purpose':'new','survey':True},{'purpose':'renovation','survey':True},{'size':'-1'},{'size':'4'},{'building':'bad'},{'region':'bad'},{'express':'false'}):
    d=self.data();d.update(changes)
@@ -117,11 +124,16 @@ class HTTP(unittest.TestCase):
    with app.db() as c:self.assertEqual(c.execute('SELECT state FROM requests WHERE id=?',(p['requestId'],)).fetchone()[0],'sent')
  def test_crm_failure_falls_back_to_structured_email(self):
   p=self.payload()
+  p['size'] = 'area-2'
+  p['sizeLabel'] = 'Nedůvěryhodný popis z prohlížeče'
   with patch.dict(os.environ,{'CRM_ENDPOINT':'https://crm.example.invalid/api/inquiries/enepru/','CRM_SHARED_SECRET':'test-contract-key'}),patch('crm_bridge.send',side_effect=TimeoutError),patch('app.smtplib.SMTP') as smtp:
    smtp.return_value.__enter__.return_value=smtp.return_value;smtp.return_value.send_message.return_value={}
    self.assertEqual(self.submit(p)[0],200)
    mail=smtp.return_value.send_message.call_args.args[0]
    self.assertTrue(mail['X-CRM-Mail-Signature'])
+   self.assertIn('Rozsah: Nad 250 m²', mail.get_body(preferencelist=('plain',)).get_content())
+   inquiry = next(a for a in mail.iter_attachments() if a.get_filename() == app.crm_bridge.FILENAME)
+   self.assertIn('Rozsah: Nad 250 m²', json.loads(inquiry.get_payload(decode=True))['description'])
    with app.db() as c:self.assertFalse(c.execute('SELECT 1 FROM crm_pending WHERE id=?',(p['requestId'],)).fetchone())
  def login(self):
   salt='ab'*16

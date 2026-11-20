@@ -19,9 +19,10 @@ with tempfile.TemporaryDirectory() as temp:
    page.locator(f'input[name=building][value={building}]').check()
    for purpose in ('new','sale','renovation'):
     page.locator('#purpose').select_option(purpose)
-    for i,expected in enumerate(pricing[building][purpose]):
-     page.locator('#size').select_option(str(i));actual=int(''.join(x for x in page.locator('#price').inner_text() if x.isdigit()));assert actual==expected,(building,purpose,i,actual);count+=1
-  page.locator('input[name=building][value=house]').check();page.locator('#purpose').select_option('sale');page.locator('#size').select_option('0');page.locator('#survey').check()
+    rates = pricing[building][purpose][:3] if building == 'house' else pricing[building][purpose]
+    for i,expected in enumerate(rates):
+     page.locator('#size').select_option(f'area-{i}' if building == 'house' else str(i));actual=int(''.join(x for x in page.locator('#price').inner_text() if x.isdigit()));assert actual==expected,(building,purpose,i,actual);count+=1
+  page.locator('input[name=building][value=house]').check();page.locator('#purpose').select_option('sale');page.locator('#size').select_option('area-0');page.locator('#survey').check()
   for name,fee in pricing['regions'].items():
    page.locator('#region').select_option(name)
    assert page.locator('[data-region][aria-pressed=true]').count()>=1
@@ -33,6 +34,7 @@ with tempfile.TemporaryDirectory() as temp:
   page.locator('#region-map [data-region="Vysočina"]').click();assert page.locator('#region').input_value()=='Vysočina'
   page.locator('#region-map [data-region="Praha"]').focus();page.keyboard.press('Enter');assert page.locator('#region').input_value()=='Praha'
   page.locator('#purpose').select_option('new');assert not page.locator('#survey').is_checked();assert not page.locator('#region-panel').is_visible()
+  page.locator('input[name=building][value=apartment]').check()
   page.locator('#size').select_option('custom');assert page.locator('#price').inner_text()=='Na dotaz'
   page.locator('input[name=building][value=other]').check();assert page.locator('#price').inner_text()=='Na dotaz'
   page.locator('#request-details summary').click();page.locator('#quote-form input[name=name]').fill('Rozepsaný formulář')

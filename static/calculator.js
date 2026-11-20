@@ -1,6 +1,7 @@
 (async()=>{
 function quote(pricing, {building, purpose, size, survey, region, passport, express = false}) {
-  const base = building === 'other' ? pricing.other?.[purpose] ?? null : size === 'custom' ? null : pricing[building]?.[purpose]?.[Number(size)] ?? null;
+  const rateIndex = size.startsWith('area-') ? Number(size.slice(5)) : Number(size);
+  const base = building === 'other' ? pricing.other?.[purpose] ?? null : size === 'custom' ? null : pricing[building]?.[purpose]?.[rateIndex] ?? null;
   const needsSurvey = purpose === 'sale' && survey;
   const travel = needsSurvey ? pricing.regions[region] : 0;
   const onRequest = base === null || (needsSurvey && travel == null);
@@ -57,10 +58,15 @@ try {
   function update() {
     const building = form.elements.building.value;
     if (building !== previousBuilding) {
-      const labels = building === 'house' ? t('ui_house_sizes','1 podlaží|2 podlaží|3 podlaží|4 podlaží|5 a více — na dotaz').split('|') : t('ui_apartment_sizes','Do 500 m²|Nad 500 do 1 000 m²|Nad 1 000 do 2 000 m²|Nad 2 000 do 3 000 m²|Nad 3 000 m² — na dotaz').split('|');
-      $('size').replaceChildren(...labels.map((label,i) => new Option(label,i === 4 ? 'custom' : String(i))));
-      $('size-title').textContent = building === 'house' ? t('ui_size_house','Počet podlaží včetně sklepa') : t('ui_size_apartment','Podlahová plocha');
-      $('size-note').textContent = building === 'house' ? t('ui_basement','Máte sklep? Připočítejte k nadzemním podlažím ještě jedno podlaží. Například přízemí + patro + sklep = 3 podlaží.') : t('ui_area_note','Vyberte podlahovou plochu celé budovy.');
+      const house = building === 'house';
+      const labels = house
+        ? t('ui_house_area_sizes', 'Do 150 m²|Nad 150 do 250 m²|Nad 250 m²').split('|')
+        : t('ui_apartment_sizes', 'Do 500 m²|Nad 500 do 1 000 m²|Nad 1 000 do 2 000 m²|Nad 2 000 do 3 000 m²|Nad 3 000 m² — na dotaz').split('|');
+      $('size').replaceChildren(...labels.map((label, i) => new Option(label, house ? 'area-' + i : i === 4 ? 'custom' : String(i))));
+      $('size-title').textContent = t('ui_size_apartment', 'Podlahová plocha');
+      $('size-note').textContent = house
+        ? t('ui_house_area_note', 'Vyberte pásmo podle celkové podlahové plochy rodinného domu.')
+        : t('ui_area_note', 'Vyberte podlahovou plochu celé budovy.');
       previousBuilding = building;
     }
     const sale = $('purpose').value === 'sale';

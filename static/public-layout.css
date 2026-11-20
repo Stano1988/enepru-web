@@ -1,0 +1,328 @@
+:root {
+  --ink: #242b2f;
+  --paper: #f7f4ed;
+  --muted: #535855;
+  --line: #d4cdc0;
+  --accent: #933923;
+  --accent-soft: #f1e5db;
+  --accent-dark: #702917;
+  --editorial-serif: Georgia, "Times New Roman", serif;
+}
+
+.header {
+  min-height: 0;
+  padding: 18px 0;
+  gap: 12px 32px;
+}
+
+.personal-brand {
+  min-height: 0;
+  padding: 0;
+  gap: 3px;
+}
+
+.personal-brand .person-name {
+  font-family: var(--editorial-serif);
+  font-size: clamp(1.3rem, 2.5vw, 1.65rem);
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.personal-brand .person-services {
+  font-size: 0.875rem;
+  letter-spacing: 0;
+}
+
+.header nav {
+  gap: 8px 24px;
+}
+
+.header nav a {
+  font-size: 0.875rem;
+}
+
+.header nav a:hover,
+.header nav a[aria-current="page"] {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.button {
+  background: var(--accent);
+}
+
+.button:hover {
+  background: var(--accent-dark);
+  transform: none;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 4px;
+}
+
+.home-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 2.35fr) minmax(0, 1fr);
+  gap: clamp(30px, 6vw, 86px);
+  align-items: end;
+  padding: clamp(52px, 7vw, 104px) 0 clamp(48px, 6vw, 82px);
+}
+
+#intro-heading {
+  max-width: 12ch;
+  margin: 0 0 23px;
+  font: 400 clamp(3.75rem, 7.7vw, 7.1rem)/0.99 var(--editorial-serif);
+  letter-spacing: -0.067em;
+  text-wrap: balance;
+}
+
+#intro-heading::first-line {
+  color: var(--accent);
+}
+
+.home-lead {
+  max-width: 39ch;
+  margin: 0;
+  font-size: clamp(1.0625rem, 1.6vw, 1.25rem);
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 24px;
+  margin-top: 28px;
+}
+
+.home-price {
+  justify-content: center;
+  min-height: 52px;
+  padding: 12px 22px;
+  font-size: 1rem;
+}
+
+.home-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 0.24em;
+  text-decoration-thickness: 1px;
+}
+
+.home-link:hover {
+  color: var(--accent);
+}
+
+.home-price-note {
+  margin: 11px 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.home-contact {
+  padding: 17px 0 4px clamp(22px, 3.4vw, 48px);
+  border-left: 2px solid var(--accent);
+}
+
+.home-contact h2,
+.home-terms h2,
+.home-partners h2 {
+  margin: 0;
+  font: 400 clamp(1.7rem, 2.8vw, 2.35rem)/1.1 var(--editorial-serif);
+  letter-spacing: -0.032em;
+  text-wrap: balance;
+}
+
+.home-contact p,
+.home-partners p {
+  margin: 14px 0 0;
+  color: var(--muted);
+}
+
+.home-contact .home-contact-name {
+  margin-top: 22px;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.home-terms,
+.home-partners {
+  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 22px 36px;
+  padding: 29px 0 36px;
+}
+
+.home-terms dl,
+.home-terms dd {
+  margin: 0;
+}
+
+.home-terms dl > div {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(0, 2fr);
+  gap: 2px 22px;
+  padding: 12px 0;
+}
+
+.home-terms dl > div:first-child {
+  padding-top: 0;
+}
+
+.home-terms dl > div + div {
+  border-top: 1px solid var(--line);
+}
+
+.home-terms dt,
+.home-terms dd strong {
+  font-weight: 700;
+}
+
+.home-terms dd span {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.home-partners {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.home-partners p {
+  max-width: 66ch;
+}
+
+.page-intro {
+  display: block;
+}
+
+.page-intro h1,
+.page-heading h1 {
+  font-family: var(--editorial-serif);
+  letter-spacing: -0.045em;
+}
+
+.page-heading .eyebrow,
+.calculator-intro,
+.passport-purpose,
+main .penb-explainer h2,
+main .simple-card h2,
+main .documents h2,
+main .passport-request > div > h2,
+main #contact-form h2,
+main .legal-copy h2 {
+  background: var(--accent-soft);
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+#quote-form {
+  border-color: var(--line);
+  box-shadow: none;
+}
+
+#quote-heading {
+  margin: 0 0 18px;
+  font: 400 clamp(1.65rem, 3vw, 2.45rem)/1.1 var(--editorial-serif);
+}
+
+#quote-form .price-box {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+#quote-form summary {
+  background: var(--accent);
+}
+
+#quote-form summary:hover {
+  background: var(--accent-dark);
+}
+
+.preview {
+  background: #ebe5d9;
+  color: var(--muted);
+}
+
+footer {
+  background: var(--ink);
+}
+
+.footer-inner .personal-brand .person-services {
+  font-size: 0.875rem;
+}
+
+.provider-details {
+  grid-template-columns: 1fr 1fr;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 900px) {
+  .header nav {
+    width: auto;
+  }
+}
+
+@media (max-width: 690px) {
+  .header {
+    justify-content: flex-start;
+    padding: 15px 0 5px;
+    row-gap: 8px;
+  }
+
+  .header nav {
+    display: grid;
+    grid-template-columns: repeat(5, auto);
+    justify-content: space-between;
+    width: 100%;
+    gap: 0;
+  }
+
+  .header nav a {
+    padding-inline: 0;
+  }
+
+  .home-intro,
+  .home-terms,
+  .home-partners {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-intro {
+    gap: 29px;
+    padding-top: 44px;
+    padding-bottom: 34px;
+  }
+
+  #intro-heading {
+    font-size: clamp(3.1rem, 10vw, 4.5rem);
+  }
+
+  .home-contact {
+    padding: 4px 0 0 17px;
+  }
+
+  .home-partners {
+    gap: 10px;
+  }
+
+  .home-partners .home-link {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 410px) {
+  .home-terms dl > div {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -11,6 +11,7 @@ from urllib.parse import parse_qs, urlsplit
 
 ROOT = Path(__file__).resolve().parent
 DATA = Path(os.environ.get('APP_DATA_DIR', str(ROOT / '.local')))
+HOUSE_AREA_SIZES = ('area-0', 'area-1', 'area-2')
 ROUTES = ['uvod','penb','pasporty','dotazy','kontakty','gdpr','podminky','cookies']
 LOCK = threading.RLock()
 LIMITS = collections.defaultdict(collections.deque)
@@ -36,7 +37,9 @@ def initialize():
             saved.update(missing);c.execute('UPDATE content SET revision=revision+1,body=? WHERE id=1',(json.dumps(saved,ensure_ascii=False),))
         # Add new editable captions, preserve owner changes, migrate unchanged payment copy.
         extra={k:v for k,v in defaults['texts'].items() if k not in saved['texts']}
-        changed=bool(extra);saved['texts'].update(extra)
+        extra_ui = {key: value for key, value in defaults['ui'].items() if key not in saved['ui']}
+        changed=bool(extra or extra_ui);saved['texts'].update(extra)
+        saved['ui'].update(extra_ui)
         prior_captions={'image_penb_alt': 'Ilustrační průkaz energetické náročnosti budovy s barevnou stupnicí a dokumentace stavby', 'image_penb_caption': 'PENB přehledně zachytí energetickou náročnost budovy. Ilustrační náhled dokumentace.', 'image_survey_alt': 'Pracovní stůl s půdorysem stavby, laserovým dálkoměrem a podklady pro zaměření', 'image_survey_caption': 'Od zaměření ke zjednodušené dokumentaci skutečného stavu. Ilustrační obrázek vytvořený pomocí AI.'}
         for key,old_copy in prior_captions.items():
             if saved['texts'].get(key)==old_copy and defaults['texts'][key]!=old_copy:
@@ -47,11 +50,34 @@ def initialize():
             saved['legal']['podminky']=saved['legal']['podminky'].replace('Okamžik vystavení, splatnost a případné zálohy budou dohodnuty v potvrzení zakázky; tento web je neurčuje.','Faktura má splatnost 14 dnů od vystavení. Okamžik vystavení a případné zálohy budou dohodnuty v potvrzení zakázky.');changed=True
         if changed:
             c.execute('UPDATE content SET revision=revision+1,body=? WHERE id=1',(json.dumps(saved,ensure_ascii=False),))
-        prior_intro={'text_0015': 'Dokumenty k domu.', 'text_0017': 'Potřebujete energetický průkaz nebo chybějící dokumentaci k domu? Připravím PENB i pasport stavby. Cenu průkazu zjistíte předem; pokud při prodeji či pronájmu nemáte podklady, přijedu zaměřit.'}
-        intro_changed=False
-        for key,previous in prior_intro.items():
-            if saved['texts'].get(key)==previous:
-                saved['texts'][key]=defaults['texts'][key];intro_changed=True
+        # Update only the former defaults; leave owner-edited text intact.
+        prior_intro = {
+            'text_0015': 'PENB – průkaz energetické náročnosti budovy (energetický štítek) levně a rychle pro celou ČR',
+            'text_0017': 'Potřebujete energetický štítek budovy kvůli prodeji, pronájmu nebo kolaudaci? Jako certifikovaný energetický specialista MPO (č. oprávnění 2321) vám vypracuji oficiální PENB za nejnižší možnou cenu, bez skrytých poplatků a s garancí rychlého dodání.',
+            'text_0044': 'PENB s jasnou cenou.',
+            'text_0133': 'Připravit nezávaznou poptávku',
+            'text_0216': 'Počítá se sklep jako podlaží?',
+            'text_0217': 'Ano, v této kalkulačce připočítejte i sklep. Přízemí + patro + sklep = 3 podlaží.',
+            'cta_note': 'Cenu uvidíte hned · nezávazně a bez zadávání kontaktu',
+            'ux_express_copy': 'Příplatek dle kalkulačky. Od potvrzení zakázky a kompletních podkladů.',
+        }
+        older_intro = {
+            'text_0015': 'Dokumenty k domu.',
+            'text_0017': 'Potřebujete energetický průkaz nebo chybějící dokumentaci k domu? Připravím PENB i pasport stavby. Cenu průkazu zjistíte předem; pokud při prodeji či pronájmu nemáte podklady, přijedu zaměřit.',
+        }
+        intro_changed = False
+        for key, previous in prior_intro.items():
+            if saved['texts'].get(key) == previous or (key in older_intro and saved['texts'].get(key) == older_intro[key]):
+                saved['texts'][key] = defaults['texts'][key]
+                intro_changed = True
+        prior_home_seo = {
+            'title': 'PENB – energetický štítek levně a rychle | Ing. Stanislav Lahodný',
+            'description': 'PENB – průkaz energetické náročnosti budovy pro celou ČR. Spočítejte cenu energetického štítku online bez zadávání kontaktu. Ing. Stanislav Lahodný, oprávnění 2321.',
+        }
+        for key, previous in prior_home_seo.items():
+            if saved['seo']['uvod'].get(key) == previous:
+                saved['seo']['uvod'][key] = defaults['seo']['uvod'][key]
+                intro_changed = True
         if intro_changed:
             c.execute('UPDATE content SET revision=revision+1,body=? WHERE id=1',(json.dumps(saved,ensure_ascii=False),))
         old_map_palette={'Vysočina': '#e9ddc9', 'Pardubický': '#d8c0a1', 'Jihomoravský': '#d8c0a1', 'Královéhradecký': '#c2a07a', 'Praha': '#af835e', 'Středočeský': '#af835e', 'Jihočeský': '#af835e', 'Olomoucký': '#af835e', 'Liberecký': '#af835e', 'Plzeňský': '#c0c9ce', 'Karlovarský': '#c0c9ce', 'Ústecký': '#c0c9ce', 'Moravskoslezský': '#c0c9ce', 'Zlínský': '#c0c9ce'}
@@ -89,11 +115,17 @@ def throttle(key, count, seconds):
 
 def quote(p, data):
     building=data.get('building');purpose=data.get('purpose');size=str(data.get('size',''))
-    if building not in ('house','apartment','other') or purpose not in ('new','sale','renovation') or size not in ('0','1','2','3','custom'): raise Invalid('Neplatná kategorie nebo rozsah stavby.')
+    valid_sizes = ('0', '1', '2', '3', 'custom')
+    if building == 'house':
+        valid_sizes += HOUSE_AREA_SIZES
+    if building not in ('house','apartment','other') or purpose not in ('new','sale','renovation') or size not in valid_sizes:
+        raise Invalid('Neplatná kategorie nebo rozsah stavby.')
     for k in ('survey','express','passport'):
         if type(data.get(k)) is not bool:raise Invalid('Neplatná volba '+k)
     if data['survey'] and purpose!='sale': raise Invalid('Zaměření je dostupné pouze pro prodej či pronájem.')
     if data.get('region') not in p['regions']:raise Invalid('Vyberte platný kraj.')
+    if size in HOUSE_AREA_SIZES:
+        size = str(HOUSE_AREA_SIZES.index(size))
     base=p['other'][purpose] if building=='other' else None if size=='custom' else p[building][purpose][int(size)]
     travel=p['regions'][data['region']] if data['survey'] else 0
     fee=p['expressFee'] if data['express'] else 0
@@ -111,6 +143,9 @@ def validate_content(data, original):
     for s in ('texts','ui','seo','legal','contacts','mapBands'):strings(data[s])
     if any(not re.fullmatch(r'#[0-9a-fA-F]{6}',v) for v in data['mapBands'].values()):raise Invalid('Barvy pásem musí mít formát #RRGGBB.')
     if any(len(data['ui'][k].split('|'))!=5 for k in ('ui_house_sizes','ui_apartment_sizes')):raise Invalid('Popisky rozsahu musí obsahovat pět možností oddělených znakem |.')
+    house_areas = data['ui']['ui_house_area_sizes'].split('|')
+    if len(house_areas) != len(HOUSE_AREA_SIZES) or any(not area.strip() for area in house_areas):
+        raise Invalid('Popisky ploch rodinných domů musí obsahovat tři možnosti oddělené znakem |.')
     if not re.fullmatch(r'[^\s@<>\r\n]+@[^\s@<>\r\n]+\.[^\s@<>\r\n]+',data['contacts']['email']):raise Invalid('Neplatný kontaktní e-mail.')
     if not re.fullmatch(r'[+0-9 ()-]{5,30}',data['contacts']['phone']):raise Invalid('Neplatný telefon.')
     def numbers(a,b):
@@ -132,11 +167,16 @@ def smtp_ready():
 def send_mail(payload, attachments, result, site):
     msg=EmailMessage(); msg['Subject']='Nezávazná poptávka – '+{'penb':'PENB','passport':'pasport stavby','contact':'dotaz'}[payload['kind']]
     msg['From']=os.environ['SMTP_FROM'];msg['To']='penb.lahodny@seznam.cz';msg['Reply-To']=payload['email']
-    labels={'name':'Jméno','email':'E-mail','phone':'Telefon','address':'Adresa','municipality':'Obec','propertyNumber':'Číslo popisné / parcelní','cadastralArea':'Katastrální území','description':'Popis stavby','notes':'Poznámky','building':'Typ stavby','purpose':'Účel','size':'Rozsah (index 0–3, custom = na dotaz)','region':'Kraj','survey':'Zaměření','passport':'Také pasport','express':'Expres'}
+    labels={'name':'Jméno','email':'E-mail','phone':'Telefon','address':'Adresa','municipality':'Obec','propertyNumber':'Číslo popisné / parcelní','cadastralArea':'Katastrální území','description':'Popis stavby','notes':'Poznámky','building':'Typ stavby','purpose':'Účel','size':'Kód rozsahu','region':'Kraj','survey':'Zaměření','passport':'Také pasport','express':'Expres'}
     lines=[f'{label}: {payload[k]}' for k,label in labels.items() if k in payload]
     if result:
         lines+=['','Cenový rozpis (Kč, neplátce DPH):']+[f'{k}: {v if v is not None else "Na dotaz"}' for k,v in result.items()]
-        lines+=['Rozsah: '+(('1 podlaží','2 podlaží','3 podlaží','4 podlaží')[int(payload['size'])] if payload['building']=='house' and payload['size']!='custom' else ('Do 500 m²','Nad 500 do 1 000 m²','Nad 1 000 do 2 000 m²','Nad 2 000 do 3 000 m²')[int(payload['size'])] if payload['building']=='apartment' and payload['size']!='custom' else 'Individuální nabídka')]
+        size = str(payload['size'])
+        size_label = payload.get('sizeLabel')
+        if size_label is None and size != 'custom' and payload['building'] in ('house', 'apartment'):
+            sizes_key = 'ui_house_sizes' if payload['building'] == 'house' else 'ui_apartment_sizes'
+            size_label = site['ui'][sizes_key].split('|')[int(size)]
+        lines += ['Rozsah: ' + (size_label or 'Individuální nabídka')]
         if result['travel'] is None:lines+=['Zaměření na dotaz, od '+str(site['pricing']['travelOnRequestFrom'])+' Kč; konečný součet není potvrzen.']
         lines+=['PENB do '+('5' if payload['express'] else '10')+' pracovních dnů od potvrzení zakázky a kompletních podkladů.','Pasport samostatně na dotaz, do 30 dnů od zaměření.','Platba na fakturu se splatností 14 dnů od vystavení; okamžik vystavení se potvrdí při objednávce.']
     msg.set_content('\n'.join(lines))
@@ -199,7 +239,7 @@ def render(route,site,rev):
     domain=os.environ.get('PUBLIC_ORIGIN','').rstrip('/')
     if domain:
         source=source.replace('</head>','<link rel="canonical" href="'+html.escape(domain+('/' if route=='uvod' else '/'+route),quote=True)+'"></head>')
-    source=source.replace('</body>','<script src="/site-data.js"></script><script src="/static/navigation.js"></script><script src="/static/hero-reveal.js"></script><script src="/static/calculator.js"></script><script src="/static/forms.js"></script></body>')
+    source=source.replace('</body>','<script src="/site-data.js"></script><script src="/static/navigation.js"></script><script src="/static/calculator.js"></script><script src="/static/forms.js"></script></body>')
     return source
 
 class Handler(BaseHTTPRequestHandler):
@@ -329,12 +369,16 @@ class Handler(BaseHTTPRequestHandler):
             if not isinstance(request_id,str) or not re.fullmatch(r'[a-fA-F0-9-]{36}',request_id):raise Invalid('Neplatný identifikátor odeslání.')
             try:uuid.UUID(request_id)
             except ValueError:raise Invalid('Neplatný identifikátor odeslání.')
+            payload.pop('sizeLabel', None)
             rev,site=content();result=None
             if kind=='penb':
                 result=quote(site['pricing'],payload)
                 if payload.get('pricing')!=site['pricing'] or payload.get('quoted')!=result:
                     return self.json(409,{'error':'Ceník nebo kalkulace se změnily. Zkontrolujte novou cenu a odešlete znovu.','pricing':site['pricing']})
             fingerprint=hashlib.sha256(json.dumps(payload,sort_keys=True).encode()+b''.join(hashlib.sha256(f[2]).digest()+f[0].encode() for f in files)).hexdigest()
+            if kind == 'penb' and payload.get('size') in HOUSE_AREA_SIZES:
+                area_index = HOUSE_AREA_SIZES.index(payload['size'])
+                payload['sizeLabel'] = site['ui']['ui_house_area_sizes'].split('|')[area_index]
             with LOCK, db() as c:
                 c.execute('DELETE FROM requests WHERE created<? AND id NOT IN (SELECT id FROM crm_pending)',(int(time.time())-7*86400,))
                 row=c.execute('SELECT fingerprint,state FROM requests WHERE id=?',(request_id,)).fetchone()

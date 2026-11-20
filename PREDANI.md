@@ -92,3 +92,9 @@ Na přání majitele zapracovány nasbírané připomínky. Zvolena tmavomodrá,
 Nad kalkulačkou je popis ceny PENB se zaměřením při prodeji nebo pronájmu, s výslovnou výhradou krajů na dotaz. Úvod má karty standardního a expresního PENB, pasportu a ceny s ikonami. Termíny zachovávají své podmínky. Přidán blok pro realitní kanceláře a projektanty se zvýhodněnými cenami při pravidelné spolupráci a individuální dohodou; žádná provize ani automatická sleva se nenastavuje. Tlačítko vede na kontaktní formulář. Pasportová stránka vysvětluje, že samotný prodej bez plánů nezakládá automatickou povinnost pasportu.
 
 Texty bloků se dají měnit v administraci. Existující vlastní barvy krajů a upravené texty zůstávají zachované; aktualizuje se pouze známá výchozí barevná paleta. Cena, čtyřsekundová animace i předchozí úpravy úvodu zůstávají. Propojení s Google, nákup domény, placená reklama ani produkční nasazení se tímto neprováděly.
+
+## Úvod a plochy rodinných domů — 20. listopadu 2026
+
+Úvod používá typografii, přímé odkazy na kalkulaci a pasport a přehled termínů. Pracovní fotka majitele zatím není součástí webu. Cenu PENB lze zjistit bez zadání kontaktu a z téže kalkulace pokračovat nezávaznou poptávkou.
+
+Rodinný dům má v kalkulačce tři pásma celkové podlahové plochy: do 150 m², nad 150 do 250 m² a nad 250 m². Pásma používají první tři dosavadní sazby pro každý účel PENB. Čtvrtá sazba zůstává uložená kvůli dříve otevřeným kalkulacím. U bytových domů zůstávají dosavadní pásma podle m² a u jiných staveb individuální nacenění. Kód nového pásma se přenáší společně s čitelným popisem v e-mailu a v poptávce pro CRM.

@@ -21,8 +21,11 @@ def inquiry_data(payload,result=None):
     address=payload.get('address','').strip()
     if not address and kind=='passport':
         address=', '.join(value for value in [payload.get('municipality',''),payload.get('propertyNumber',''),payload.get('cadastralArea','')] if value and value!='—')
-    labels={'building':'Typ stavby','purpose':'Účel','size':'Rozsah','survey':'Zaměření','region':'Kraj','passport':'Také pasport','express':'Expres','municipality':'Obec','propertyNumber':'Číslo stavby / parcela','cadastralArea':'Katastrální území','description':'Popis stavby','notes':'Požadavek'}
+    labels={'building':'Typ stavby','purpose':'Účel','survey':'Zaměření','region':'Kraj','passport':'Také pasport','express':'Expres','municipality':'Obec','propertyNumber':'Číslo stavby / parcela','cadastralArea':'Katastrální území','description':'Popis stavby','notes':'Požadavek'}
     description='\n'.join(f'{label}: {payload[key]}' for key,label in labels.items() if payload.get(key) not in (None,''))
+    size_label = payload.get('sizeLabel') or payload.get('size')
+    if size_label:
+        description += ('\n' if description else '') + f'Rozsah: {size_label}'
     if result:description+='\n\nOrientační kalkulace webu: '+json.dumps(result,ensure_ascii=False)+'. Konečná nabídka vyžaduje kontrolu.'
     return {'schema':SCHEMA,'external_id':str(uuid.UUID(payload['requestId'])),'source_slug':os.environ.get('CRM_SOURCE_SLUG','enepru'),'name':payload['name'],'email':payload['email'],'phone':payload.get('phone',''),'address':address,'service':service,'description':description or 'Dotaz z webu','source_details':{'form':kind,'building':payload.get('building'),'purpose':payload.get('purpose'),'region':payload.get('region'),'size':payload.get('size'),'survey':payload.get('survey'),'express':payload.get('express'),'quote':result}}
 

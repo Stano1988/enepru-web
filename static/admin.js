@@ -4,7 +4,12 @@
  const state=await r.json(),data=state.content;
  const names={name:'Jméno',address:'Sídlo',ico:'IČO',authorization:'Číslo oprávnění',phone:'Telefon',email:'E-mail',house:'Rodinný dům',apartment:'Bytový dům',other:'Jiná stavba',new:'Novostavba',sale:'Prodej / pronájem',renovation:'Rekonstrukce',regions:'Zaměření – kraje',expressFee:'Expresní příplatek',travelOnRequestFrom:'Minimum zaměření na dotaz',title:'Titulek',description:'Popis pro vyhledávače',uvod:'Úvod',penb:'PENB',pasporty:'Pasporty',dotazy:'Časté dotazy',kontakty:'Kontakty',gdpr:'Zásady zpracování osobních údajů',podminky:'Obchodní podmínky',cookies:'Informace o cookies'};
  function field(parent,key,value,path){
-  const label=document.createElement('label'),caption=document.createElement('span');caption.textContent=path.map(k=>names[k]||k).join(' / ');label.append(caption);
+  const label=document.createElement('label'),caption=document.createElement('span');const priceRanges = path[0] === 'house' ? data.ui.ui_house_area_sizes.split('|') : data.ui.ui_apartment_sizes.split('|');
+  const band = tab === 'pricing' && Array.isArray(parent)
+   ? priceRanges[Number(key)] || 'Původní sazba (jen pro dřívější kalkulace)'
+   : '';
+  caption.textContent = (band ? [...path.slice(0, -1).map(k => names[k] || k), band] : path.map(k => names[k] || k)).join(' / ');
+  label.append(caption);
   const numeric=tab==='pricing',input=document.createElement(numeric||tab==='mapBands'?'input':'textarea');
   if(numeric){input.type='number';input.min='0';input.max='10000000';input.step='1';input.placeholder='Na dotaz';}
   if(tab==='mapBands'){input.type='color';}
@@ -30,7 +35,9 @@
   $('#save').disabled=true;try{const response=await fetch('/api/admin/content',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':state.csrf},body:JSON.stringify({revision:state.revision,content:data})});const result=await response.json();if(!response.ok)throw Error(result.error);state.revision=result.revision;dirty=false;$('#status').textContent='Uloženo. Verze '+state.revision+'. Změny uvidíte po obnovení webu.';}catch(e){$('#status').textContent=e.message;}finally{$('#save').disabled=false;}
  };
  $('#export').onclick=()=>{const url=URL.createObjectURL(new Blob([JSON.stringify({revision:state.revision,content:data},null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='obsah-zaloha.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
- $('#import').onchange=async e=>{try{const f=e.target.files[0];if(!f||f.size>2000000)throw Error('Příliš velký soubor.');const v=JSON.parse(await f.text());if(!v.content||Object.keys(data).sort().join()!==Object.keys(v.content).sort().join())throw Error('Neplatná záloha.');for(const k of Object.keys(data))data[k]=v.content[k];dirty=true;draw();$('#status').textContent='Záloha načtena do editoru. Zkontrolujte obsah a uložte změny.';}catch(err){$('#status').textContent=err.message;}};
+ $('#import').onchange=async e=>{try{const f=e.target.files[0];if(!f||f.size>2000000)throw Error('Příliš velký soubor.');const v=JSON.parse(await f.text());if(!v.content||Object.keys(data).sort().join()!==Object.keys(v.content).sort().join())throw Error('Neplatná záloha.');for (const k of Object.keys(data)) {
+  data[k] = k === 'texts' || k === 'ui' ? {...data[k], ...v.content[k]} : v.content[k];
+ }dirty=true;draw();$('#status').textContent='Záloha načtena do editoru. Zkontrolujte obsah a uložte změny.';}catch(err){$('#status').textContent=err.message;}};
  $('#logout').onclick=async()=>{if(dirty&&!confirm('Opustit neuložené změny?'))return;await fetch('/api/admin/logout',{method:'POST',headers:{'X-CSRF-Token':state.csrf}});dirty=false;location.href='/admin';};
  addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue='';}});draw();
 })();

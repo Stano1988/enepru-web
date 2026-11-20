@@ -14,9 +14,9 @@
     "text_0012": "Časté dotazy",
     "text_0013": "Kontakty",
     "text_0014": "ENERGETICKÝ SPECIALISTA · OPRÁVNĚNÍ Č. 2321",
-    "text_0015": "PENB – průkaz energetické náročnosti budovy (energetický štítek) levně a rychle pro celou ČR",
+    "text_0015": "PENB a pasporty staveb",
     "text_0016": "O starost méně.",
-    "text_0017": "Potřebujete energetický štítek budovy kvůli prodeji, pronájmu nebo kolaudaci? Jako certifikovaný energetický specialista MPO (č. oprávnění 2321) vám vypracuji oficiální PENB za nejnižší možnou cenu, bez skrytých poplatků a s garancí rychlého dodání.",
+    "text_0017": "Prodáváte nebo pronajímáte nemovitost? Zjistěte, kolik bude stát energetický průkaz. Zpracovávám PENB i pro novostavby a rekonstrukce.",
     "text_0018": "Zjistit cenu PENB",
     "text_0019": "Potřebuji pasport",
     "text_0020": "SL",
@@ -43,7 +43,7 @@
     "text_0041": "Chybí pasport?",
     "text_0042": "Nabídku připravíme podle vaší nemovitosti.",
     "text_0043": "PRŮKAZ ENERGETICKÉ NÁROČNOSTI BUDOV",
-    "text_0044": "PENB s jasnou cenou.",
+    "text_0044": "Průkaz energetické náročnosti budovy",
     "text_0045": "Vyberte typ stavby a účel průkazu. Chybějící dokumentaci při prodeji či pronájmu vyřešíme zaměřením.",
     "text_0046": "CO JE PENB?",
     "text_0047": "Energetický štítek",
@@ -132,7 +132,7 @@
     "text_0130": "Cena PENB",
     "text_0131": "—",
     "text_0132": "Nejsme plátci DPH.",
-    "text_0133": "Připravit nezávaznou poptávku",
+    "text_0133": "Pokračovat k poptávce",
     "text_0134": "V souboru náhledu se poptávky ani přílohy neodesílají.",
     "text_0135": "Jméno",
     "text_0136": "E-mail pro odpověď",
@@ -215,8 +215,8 @@
     "text_0213": "Průkaz energetické náročnosti budovy, běžně energetický štítek, hodnotí budovu při standardizovaném užívání. Není vyúčtováním skutečné spotřeby.",
     "text_0214": "Jaké podklady potřebuji?",
     "text_0215": "Situační plán, technickou zprávu, řezy, půdorysy všech podlaží, pohledy a popis vytápění, ohřevu TUV a dalších technologií.",
-    "text_0216": "Počítá se sklep jako podlaží?",
-    "text_0217": "Ano, v této kalkulačce připočítejte i sklep. Přízemí + patro + sklep = 3 podlaží.",
+    "text_0216": "Jakou plochu mám zadat pro rodinný dům?",
+    "text_0217": "V kalkulaci vyberte pásmo podle celkové podlahové plochy domu. Pokud plochu neznáte, napište mi a pomohu vám ji určit z podkladů.",
     "text_0218": "Je možné expresní zpracování?",
     "text_0219": "Ano. PENB do 5 pracovních dnů od potvrzení zakázky a kompletních podkladů za příplatek 3 000 Kč. Termín pasportu tím není zkrácen.",
     "text_0220": "Co je pasport stavby?",
@@ -352,7 +352,7 @@
     "image_contact_alt": "Architektonické podklady a měřicí pomůcky na pracovním stole",
     "image_contact_caption": "Pro první domluvu stačí popsat nemovitost a poslat dostupné podklady. Ilustrační obrázek vytvořený pomocí AI.",
     "cta_invitation": "Vyzkoušejte kalkulačku PENB",
-    "cta_note": "Cenu uvidíte hned · nezávazně a bez zadávání kontaktu",
+    "cta_note": "Kalkulace je nezávazná a bez zadání kontaktu.",
     "calc_missing_heading": "PENB bez dokumentace? Spočítejte si cenu zaměření",
     "calc_missing_copy": "Nemáte plány k domu, který prodáváte nebo pronajímáte? V kalkulačce vyberte zaměření a kraj. Hned uvidíte cenu PENB a příplatek za zaměření, bez zadávání telefonu či e-mailu. U krajů označených „na dotaz“ vám připravím individuální nabídku.",
     "calc_step_building": "1. Vyberte stavbu",
@@ -367,7 +367,7 @@
     "ux_standard_copy": "Od potvrzení zakázky a dodání kompletních podkladů.",
     "ux_express_title": "PENB expresně",
     "ux_express_value": "5 pracovních dnů",
-    "ux_express_copy": "Příplatek dle kalkulačky. Od potvrzení zakázky a kompletních podkladů.",
+    "ux_express_copy": "Od potvrzení zakázky a dodání kompletních podkladů. Příplatek zjistíte v kalkulaci.",
     "ux_passport_title": "Pasport stavby",
     "ux_passport_value": "Do 30 dnů",
     "ux_passport_copy": "Od zaměření. Cena individuálně podle rozsahu stavby.",
@@ -375,7 +375,11 @@
     "ux_price_value": "Bez zadávání kontaktu",
     "ux_price_copy": "PENB a dostupné příplatky v kalkulačce. Individuální případy na dotaz.",
     "passport_purpose_heading": "Když se původní plány nedochovaly",
-    "passport_purpose_copy": "Pasport zachycuje skutečný stav stavby a pomáhá doplnit nedochovanou dokumentaci. Samotný prodej domu bez plánů neznamená, že musí mít každý prodávající automaticky pasport. Potřebný rozsah dokumentace závisí na konkrétní stavbě a účelu. Pasport není povolením ani automatickou legalizací stavby."
+    "passport_purpose_copy": "Pasport zachycuje skutečný stav stavby a pomáhá doplnit nedochovanou dokumentaci. Samotný prodej domu bez plánů neznamená, že musí mít každý prodávající automaticky pasport. Potřebný rozsah dokumentace závisí na konkrétní stavbě a účelu. Pasport není povolením ani automatickou legalizací stavby.",
+    "home_plans_heading": "Nemáte plány k domu?",
+    "home_plans_copy": "Při prodeji nebo pronájmu můžu stavbu pro PENB zaměřit. Pokud potřebujete nové výkresy, připravím pasport skutečného stavu.",
+    "home_terms_heading": "Jak dlouho trvá zpracování",
+    "quote_heading": "Kalkulace ceny PENB"
   },
   "ui": {
     "ui_basement": "Máte sklep? Připočítejte k nadzemním podlažím ještě jedno podlaží. Například přízemí + patro + sklep = 3 podlaží.",
@@ -408,7 +412,9 @@
     "ui_live_banner": "PENB a pasporty staveb · Ing. Stanislav Lahodný",
     "ui_live_form_note": "Zpráva, poznámky a přílohy budou doručeny na e-mail energetického specialisty.",
     "ui_send_sent": "Odesláno",
-    "ui_express_breakdown": "Expresní PENB do 5 pracovních dnů: +{price}."
+    "ui_express_breakdown": "Expresní PENB do 5 pracovních dnů: +{price}.",
+    "ui_house_area_sizes": "Do 150 m²|Nad 150 do 250 m²|Nad 250 m²",
+    "ui_house_area_note": "Vyberte pásmo podle celkové podlahové plochy rodinného domu."
   },
   "pricing": {
     "house": {
@@ -477,8 +483,8 @@
   },
   "seo": {
     "uvod": {
-      "title": "PENB – energetický štítek levně a rychle | Ing. Stanislav Lahodný",
-      "description": "PENB – průkaz energetické náročnosti budovy pro celou ČR. Spočítejte cenu energetického štítku online bez zadávání kontaktu. Ing. Stanislav Lahodný, oprávnění 2321."
+      "title": "PENB a pasporty staveb | Ing. Stanislav Lahodný",
+      "description": "Spočítejte cenu PENB podle nemovitosti bez zadání kontaktu. Průkazy energetické náročnosti, zaměření a pasporty staveb zpracovává Ing. Stanislav Lahodný."
     },
     "penb": {
       "title": "PENB – kalkulačka ceny | Ing. Stanislav Lahodný",
