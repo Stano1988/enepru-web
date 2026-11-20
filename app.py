@@ -62,12 +62,18 @@ def initialize():
             'ux_express_copy': 'Příplatek dle kalkulačky. Od potvrzení zakázky a kompletních podkladů.',
         }
         previous_intro = {
-            'text_0015': ('Dokumenty k domu.', 'PENB a pasporty staveb'),
+            'text_0015': ('Dokumenty k domu.', 'PENB a pasporty staveb', 'Prodáváte nebo pronajímáte?'),
             'text_0017': (
                 'Potřebujete energetický průkaz nebo chybějící dokumentaci k domu? Připravím PENB i pasport stavby. Cenu průkazu zjistíte předem; pokud při prodeji či pronájmu nemáte podklady, přijedu zaměřit.',
                 'Prodáváte nebo pronajímáte nemovitost? Zjistěte, kolik bude stát energetický průkaz. Zpracovávám PENB i pro novostavby a rekonstrukce.',
+                'Připravím vám energetický průkaz. Vyberte typ a velikost nemovitosti a hned zjistíte cenu. Pokud vám chybí plány, můžu stavbu přijet zaměřit.',
             ),
-            'home_plans_copy': ('Při prodeji nebo pronájmu můžu stavbu pro PENB zaměřit. Pokud potřebujete nové výkresy, připravím pasport skutečného stavu.',),
+            'cta_note': ('Kalkulace je nezávazná a bez zadání kontaktu.',),
+            'home_terms_heading': ('Jak dlouho trvá zpracování',),
+            'home_plans_copy': (
+                'Při prodeji nebo pronájmu můžu stavbu pro PENB zaměřit. Pokud potřebujete nové výkresy, připravím pasport skutečného stavu.',
+                'Pokud potřebujete doplnit výkresy, zaměřím stavbu a připravím pasport skutečného stavu. Zavolejte mi, pokud si chcete ujasnit, který dokument potřebujete.',
+            ),
             'text_0170': ('Dokumentace chybí?',),
             'text_0171': ('Pomůžeme ji doplnit.',),
             'text_0252': ('Ozvěte se.',),
@@ -228,7 +234,13 @@ def render_legal(text):
 
 def render(route,site,rev):
     source=ROOT.joinpath('templates/site.html').read_text()
-    source=re.sub(r'\{\{(\w+)\}\}',lambda m:html.escape(site['texts'].get(m[1],''),quote=True),source)
+    sample_price = site['pricing']['house']['sale'][0]
+    texts = {
+        **site['texts'],
+        'home_example_price': f'{sample_price:,}'.replace(',', '\u00a0') + ' Kč',
+        'home_example_area': site['ui']['ui_house_area_sizes'].split('|', 1)[0],
+    }
+    source = re.sub(r'\{\{(\w+)\}\}', lambda m: html.escape(texts.get(m[1], ''), quote=True), source)
     if route not in ROUTES:route='uvod'
     source=re.sub(r'<section class="page wrap" id="(uvod|penb|pasporty|dotazy|kontakty)"([^>]*)>',lambda m:'<section class="page wrap" id="'+m[1]+'"'+re.sub(r'\s+hidden','',m[2])+(' hidden' if route!=m[1] else '')+'>',source)
     legal=''

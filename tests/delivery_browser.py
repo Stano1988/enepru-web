@@ -19,7 +19,7 @@ with tempfile.TemporaryDirectory() as tmp:
   page.goto(origin+'/penb');page.locator('#request-details summary').click();page.locator('#quote-form input[name=name]').fill('Test nové ceny');page.locator('#quote-form input[name=email]').fill('test@example.test')
   with app.db() as c:
    rev,site=app.content();site['pricing']['house']['sale'][0]=5000;c.execute('UPDATE content SET revision=revision+1,body=? WHERE id=1',(json.dumps(site),))
-  page.locator('#quote-form [data-send]').click();expect(page.locator('#quote-form .send-status')).to_contain_text('změnily');expect(page.locator('#price')).to_contain_text('5');assert smtp.return_value.send_message.call_count==3;page.locator('#quote-form [data-send]').click();expect(page.locator('#quote-form .send-status')).to_contain_text('předána poštovní službě');assert smtp.return_value.send_message.call_count==4
+  page.locator('#quote-form [data-send]').click();expect(page.locator('#quote-form .send-status')).to_contain_text('změnily');expect(page.locator('#price')).to_contain_text('5');expect(page.locator('#home-example-price')).to_have_text('5 000 Kč');assert smtp.return_value.send_message.call_count==3;page.locator('#quote-form [data-send]').click();expect(page.locator('#quote-form .send-status')).to_contain_text('předána poštovní službě');assert smtp.return_value.send_message.call_count==4
   browser.close()
  server.shutdown();server.server_close()
 print('PASS: all 3 real browser forms reached the local server and simulated SMTP, with notes, PDF, Reply-To, express and explicit tariff reconfirmation. No actual e-mail sent.')

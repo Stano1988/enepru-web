@@ -93,7 +93,16 @@ try {
   }
   form.addEventListener('change', update);
   $('passport-link').addEventListener('click', () => {$('passport').checked = true; update();});
-  document.addEventListener('pricing-update',()=>{Object.assign(pricing,window.SITE.pricing);for(const opt of $('region').options)opt.textContent=opt.value+' · '+regionPrice(opt.value);regionControls.forEach(c=>c.dataset.band=pricing.regions[c.dataset.region]===null?'request':String(pricing.regions[c.dataset.region]));update();});
+  document.addEventListener('pricing-update', () => {
+    Object.assign(pricing, window.SITE.pricing);
+    for (const option of $('region').options) option.textContent = option.value + ' · ' + regionPrice(option.value);
+    regionControls.forEach(control => {
+      const fee = pricing.regions[control.dataset.region];
+      control.dataset.band = fee === null ? 'request' : String(fee);
+    });
+    $('home-example-price').textContent = money(pricing.house.sale[0]);
+    update();
+  });
   update();
 } catch (error) {
   $('price').textContent = t('ui_unavailable','Nedostupná');

@@ -102,3 +102,11 @@ Rodinný dům má v kalkulačce tři pásma celkové podlahové plochy: do 150 m
 ## Fialový vzhled a animace úvodu — 20. listopadu 2026
 
 Hlavní nadpis úvodu reaguje na prodej a pronájem nemovitosti. Označení „PENB a pasporty staveb“ má menší velikost pod ním. Barevnost kombinuje švestkovou, světlou levandulovou a mosaznou. Úvodní ilustrace využívá dům a dokumenty z původního HTML archivu. Krátký nástup domu, dokumentů a stupnice A–G se přehraje při prvním zobrazení ilustrace. Při nastaveném omezení pohybu je scéna statická. Kalkulace podle podlahové plochy a doručování formulářů nadále používají stávající logiku.
+
+## Cena a průběh poptávky na úvodu — 20. listopadu 2026
+
+Světlý základ a inkoustový text dávají prostor fialové výzvě ke kalkulaci. Úvod ukazuje podmíněný příklad pro první plošné pásmo rodinných domů při prodeji nebo pronájmu. Popisek plochy a částka vycházejí z aktuální konfigurace. Vedle kalkulace je přímý telefon. Před vyplněním poptávky web vysvětluje, co následuje po odeslání.
+
+Stupnice A–G se vykresluje po jednotlivých pruzích s odstupem 0,4 sekundy. Dokumenty se objeví po půlsekundě a jejich nástup trvá čtyři sekundy. Při omezení pohybu je ilustrace od začátku statická.
+
+Úprava vychází z poznatků o důvěryhodnosti webů služeb a o zobrazení ceny před zadáním údajů. [Nielsen Norman Group](https://www.nngroup.com/articles/trustworthy-design/) · [Baymard Institute](https://baymard.com/blog/reduce-cart-abandonment)

@@ -7,10 +7,11 @@
 
   const observer = new IntersectionObserver(([entry]) => {
     if (home.hidden || entry.intersectionRatio < 0.25) return;
-    stage.classList.add('home-stage-entrance');
+    stage.classList.replace('home-stage-awaiting', 'home-stage-entrance');
     observer.disconnect();
   }, {threshold: 0.25});
 
+  stage.classList.add('home-stage-awaiting');
   observer.observe(stage);
 
   document.addEventListener('site:routechange', () => {
