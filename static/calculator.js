@@ -55,7 +55,7 @@ try {
     });
   });
   let previousBuilding = null;
-  function update() {
+  function update(selectedSize) {
     const building = form.elements.building.value;
     if (building !== previousBuilding) {
       const house = building === 'house';
@@ -69,6 +69,7 @@ try {
         : t('ui_area_note', 'Vyberte podlahovou plochu celé budovy.');
       previousBuilding = building;
     }
+    if (selectedSize) $('size').value = selectedSize;
     const sale = $('purpose').value === 'sale';
     $('size-label').hidden = building === 'other';
     $('size-note').hidden = building === 'other';
@@ -91,7 +92,25 @@ try {
     if (result.passport) parts.push(t('ui_passport_price','Pasport: individuální nabídka, není zahrnut v součtu.'));
     $('price-detail').textContent = parts.join(' ');
   }
-  form.addEventListener('change', update);
+  const homeSize = $('home-size');
+  function updateExamplePrice() {
+    const example = quote(pricing, {building: 'house', purpose: 'sale', size: homeSize.value, survey: false});
+    $('home-example-price').textContent = money(example.total);
+  }
+  homeSize.addEventListener('change', updateExamplePrice);
+  window.addEventListener('pageshow', updateExamplePrice);
+  document.querySelector('.home-size-label').hidden = false;
+
+  document.querySelector('.home-price').addEventListener('click', event => {
+    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    form.elements.building.value = 'house';
+    $('purpose').value = 'sale';
+    $('survey').checked = false;
+    form.elements.processing.value = 'standard';
+    update(homeSize.value);
+  });
+
+  form.addEventListener('change', () => update());
   $('passport-link').addEventListener('click', () => {$('passport').checked = true; update();});
   document.addEventListener('pricing-update', () => {
     Object.assign(pricing, window.SITE.pricing);
@@ -100,7 +119,7 @@ try {
       const fee = pricing.regions[control.dataset.region];
       control.dataset.band = fee === null ? 'request' : String(fee);
     });
-    $('home-example-price').textContent = money(pricing.house.sale[0]);
+    updateExamplePrice();
     update();
   });
   update();

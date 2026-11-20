@@ -14,29 +14,40 @@
 <main id="main">
 <section class="page wrap" id="uvod" aria-labelledby="intro-heading">
   <div class="home-intro">
-    <div class="home-copy">
+    <div>
       <h1 id="intro-heading">{{text_0015}}</h1>
       <p class="home-services">{{home_services}}</p>
+    </div>
+    <div class="home-intro-details">
       <p class="home-lead">{{text_0017}}</p>
-      <div class="home-example">
-        <div class="home-example-value">
+      <a class="home-phone" href="tel:+420604572042">{{text_0261}}</a>
+    </div>
+  </div>
+  <div class="home-workspace">
+    <section class="home-quote" aria-labelledby="home-quote-heading">
+      <h2 id="home-quote-heading">{{home_quote_heading}}</h2>
+      <p class="home-quote-scope">{{home_example_building}} · {{home_quote_purpose}}</p>
+      <div class="home-estimate">
+        <label class="home-size-label" for="home-size" hidden>{{home_size_label}}
+          <select id="home-size">
+            <option value="area-0">{{home_area_first}}</option>
+            <option value="area-1">{{home_area_second}}</option>
+            <option value="area-2">{{home_area_third}}</option>
+          </select>
+        </label>
+        <noscript><p>{{home_area_first}}</p></noscript>
+        <div class="home-estimate-price">
           <span>{{home_example_label}}</span>
-          <strong id="home-example-price">{{home_example_price}}</strong>
-        </div>
-        <div>
-          <p class="home-example-property">{{home_example_building}} · {{home_example_area}}</p>
-          <p>{{home_example_terms}}</p>
+          <strong id="home-example-price" aria-live="polite">{{home_example_price}}</strong>
         </div>
       </div>
+      <p class="home-quote-conditions">{{home_example_terms}}</p>
       <div class="home-actions">
         <a class="button home-price" href="/penb#quote-form">{{text_0018}}</a>
         <a class="home-link" href="/pasporty">{{text_0019}}</a>
       </div>
-      <div class="home-reassurance">
-        <p>{{cta_note}}</p>
-        <a class="home-phone" href="tel:+420604572042">{{text_0261}}</a>
-      </div>
-    </div>
+      <p class="home-quote-note">{{cta_note}}</p>
+    </section>
     <figure class="home-stage">
       <div class="home-scene" aria-hidden="true">
         <img class="home-house" src="/static/recovered-0.webp" width="1536" height="1024" alt="" fetchpriority="high">
@@ -45,7 +56,10 @@
         </div>
         <img class="home-papers" src="/static/recovered-1.webp" width="1536" height="1024" alt="">
       </div>
-      <figcaption>{{home_illustration_caption}}</figcaption>
+      <figcaption>
+        <span>{{home_illustration_caption}}</span>
+        <button class="motion-replay" type="button" hidden>{{home_replay_motion}}</button>
+      </figcaption>
     </figure>
   </div>
   <section class="home-terms" aria-labelledby="home-terms-heading">

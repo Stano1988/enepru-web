@@ -110,3 +110,9 @@ Světlý základ a inkoustový text dávají prostor fialové výzvě ke kalkula
 Stupnice A–G se vykresluje po jednotlivých pruzích s odstupem 0,4 sekundy. Dokumenty se objeví po půlsekundě a jejich nástup trvá čtyři sekundy. Při omezení pohybu je ilustrace od začátku statická.
 
 Úprava vychází z poznatků o důvěryhodnosti webů služeb a o zobrazení ceny před zadáním údajů. [Nielsen Norman Group](https://www.nngroup.com/articles/trustworthy-design/) · [Baymard Institute](https://baymard.com/blog/reduce-cart-abandonment)
+
+## Výběr plochy na úvodu a nové přehrání animace — 20. listopadu 2026
+
+Úvodní výpočet ukazuje cenu podle zvoleného plošného pásma rodinného domu při prodeji nebo pronájmu. Tlačítko přenese výběr do stávající kalkulačky, kde lze změnit typ stavby, účel a příplatky. Sazby zůstávají spravované ve stejném ceníku.
+
+Ilustrace má vlastní prostor vedle výpočtu. Stupnice se vykreslí po pruzích zleva a dokumenty vyjedou zespodu. Při prvním zobrazení se animace spustí automaticky a pod ilustrací je ovládání pro další přehrání. Zařízení s omezením pohybu zobrazují statickou scénu.
