@@ -54,15 +54,78 @@ try {
       }
     });
   });
+  function populateSizes(select, house) {
+    const labels = house
+      ? t('ui_house_area_sizes', 'Do 150 m²|Nad 150 do 250 m²|Nad 250 m²').split('|')
+      : t('ui_apartment_sizes', 'Do 500 m²|Nad 500 do 1 000 m²|Nad 1 000 do 2 000 m²|Nad 2 000 do 3 000 m²|Nad 3 000 m² — na dotaz').split('|');
+    const previous = select.value;
+    const options = labels.map((label, i) => new Option(label, house ? 'area-' + i : i === 4 ? 'custom' : String(i)));
+    select.replaceChildren(...options);
+    if (options.some(option => option.value === previous)) select.value = previous;
+  }
+
+  const requestDetails = $('request-details');
+  const overview = $('quote-overview');
+  const overviewDetails = $('quote-summary');
+  const wideLayout = window.matchMedia('(min-width: 881px)');
+  const header = document.querySelector('.header');
+  if ('ResizeObserver' in window) {
+    new ResizeObserver(() => {
+      const offset = getComputedStyle(header).position === 'sticky' ? header.offsetHeight : 0;
+      document.documentElement.style.setProperty('--overview-top', offset + 12 + 'px');
+    }).observe(header);
+  }
+  overviewDetails.open = wideLayout.matches;
+  wideLayout.addEventListener('change', event => { overviewDetails.open = event.matches; });
+  $('quote-summary-request').addEventListener('click', () => {
+    if (!wideLayout.matches) overviewDetails.open = false;
+    requestDetails.open = true;
+    requestDetails.querySelector('summary').focus({preventScroll: true});
+    requestDetails.scrollIntoView({block: 'start'});
+  });
+
+  const unknownPrice = t('ui_on_request', 'Na dotaz');
+  const formatPrice = value => value === null ? unknownPrice : money(value);
+  const motion = window.matchMedia('(prefers-reduced-motion: no-preference)');
+
+  function showPrice(element, price) {
+    if (element.textContent === price) return;
+    element.textContent = price;
+    if (motion.matches && typeof element.animate === 'function' && element.getClientRects().length) {
+      element.animate([{opacity: .6, transform: 'translateY(3px)'}, {opacity: 1, transform: 'none'}], 220);
+    }
+  }
+  function updateOverview(result, building, survey, region) {
+    const buildingOption = form.querySelector('input[name="building"]:checked');
+    const processingOption = form.querySelector('input[name="processing"]:checked');
+    $('quote-summary-building').textContent = buildingOption.nextElementSibling.textContent.trim();
+    $('quote-summary-purpose').textContent = $('purpose').selectedOptions[0].textContent;
+    $('quote-summary-area-row').hidden = building === 'other';
+    $('quote-summary-area').textContent = $('size').selectedOptions[0]?.textContent || '';
+    $('quote-summary-processing').textContent = processingOption.nextElementSibling.querySelector('strong').textContent;
+    $('quote-summary-base').textContent = formatPrice(result.base);
+    $('quote-summary-survey-row').hidden = !survey;
+    $('quote-summary-survey-label').textContent = t('ui_travel', 'Výjezd se zaměřením') + ' · ' + region;
+    $('quote-summary-survey').textContent = result.travel === null
+      ? t('ui_price_from', 'od {price} (na dotaz)', {price: money(pricing.travelOnRequestFrom)})
+      : money(result.travel);
+    $('quote-summary-express-row').hidden = !result.express;
+    $('quote-summary-express').textContent = money(result.expressFee);
+    $('quote-summary-passport-row').hidden = !result.passport;
+    const total = formatPrice(result.total);
+    showPrice($('quote-summary-total'), total);
+    $('quote-summary-note').textContent = result.onRequest
+      ? t('ui_price_request', 'Cena vyžaduje potvrzení')
+      : t('ui_tax', 'Nejsme plátci DPH.');
+    overview.hidden = false;
+  }
+
   let previousBuilding = null;
   function update(selectedSize) {
     const building = form.elements.building.value;
     if (building !== previousBuilding) {
       const house = building === 'house';
-      const labels = house
-        ? t('ui_house_area_sizes', 'Do 150 m²|Nad 150 do 250 m²|Nad 250 m²').split('|')
-        : t('ui_apartment_sizes', 'Do 500 m²|Nad 500 do 1 000 m²|Nad 1 000 do 2 000 m²|Nad 2 000 do 3 000 m²|Nad 3 000 m² — na dotaz').split('|');
-      $('size').replaceChildren(...labels.map((label, i) => new Option(label, house ? 'area-' + i : i === 4 ? 'custom' : String(i))));
+      populateSizes($('size'), house);
       $('size-title').textContent = t('ui_size_apartment', 'Podlahová plocha');
       $('size-note').textContent = house
         ? t('ui_house_area_note', 'Vyberte pásmo podle celkové podlahové plochy rodinného domu.')
@@ -81,10 +144,13 @@ try {
     $('map-selection').textContent = $('region').value + ' · ' + t('ui_travel','výjezd se zaměřením') + ' ' + regionPrice($('region').value);
     const express = $('express').checked;
     $('express-fee').textContent = '+' + money(pricing.expressFee);
-    const result = quote(pricing, {building,purpose:$('purpose').value,size:$('size').value,survey:$('survey').checked,region:$('region').value,passport:$('passport').checked,express});
+    const survey = $('survey').checked;
+    const region = $('region').value;
+    const result = quote(pricing, {building, purpose: $('purpose').value, size: $('size').value, survey, region, passport: $('passport').checked, express});
+    updateOverview(result, building, survey, region);
     form.dataset.quoteSnapshot = JSON.stringify(result);
     $('price-label').textContent = result.onRequest ? t('ui_price_request','Cena vyžaduje potvrzení') : $('survey').checked ? t('ui_price_survey','PENB včetně zaměření') : t('ui_price_penb','Cena PENB');
-    $('price').textContent = result.total === null ? t('ui_on_request','Na dotaz') : money(result.total);
+    $('price').textContent = formatPrice(result.total);
     const parts = [t('ui_tax','Nejsme plátci DPH.')];
     if (building === 'other' && result.base === null) parts.unshift(t('ui_other','U jiné stavby cenu stanovíme podle typu, velikosti a dostupných podkladů.'));
     if ($('survey').checked && result.base !== null) parts.unshift(t('ui_quote_breakdown','PENB {base} + zaměření {travel}.',{base:money(result.base),travel:result.travel === null ? t('ui_price_from','od {price} (na dotaz)',{price:money(pricing.travelOnRequestFrom)}) : money(result.travel)}));
@@ -93,17 +159,28 @@ try {
     $('price-detail').textContent = parts.join(' ');
   }
   const homeSize = $('home-size');
+  const homeBuilding = $('home-building');
   function updateExamplePrice() {
-    const example = quote(pricing, {building: 'house', purpose: 'sale', size: homeSize.value, survey: false});
-    $('home-example-price').textContent = money(example.total);
+    const example = quote(pricing, {building: homeBuilding.value, purpose: 'sale', size: homeSize.value, survey: false});
+    const price = formatPrice(example.total);
+    showPrice($('home-example-price'), price);
+    showPrice($('home-offer-price'), price);
+    $('home-offer-property').textContent = homeBuilding.selectedOptions[0].textContent + ' · ' + homeSize.selectedOptions[0].textContent;
+  }
+  function updateHomeSizes() {
+    populateSizes(homeSize, homeBuilding.value === 'house');
+    updateExamplePrice();
   }
   homeSize.addEventListener('change', updateExamplePrice);
-  window.addEventListener('pageshow', updateExamplePrice);
-  document.querySelector('.home-size-label').hidden = false;
+  homeBuilding.addEventListener('change', updateHomeSizes);
+  window.addEventListener('pageshow', updateHomeSizes);
+  updateHomeSizes();
+  homeSize.closest('label').hidden = false;
+  homeBuilding.closest('label').hidden = false;
 
   document.querySelector('.home-price').addEventListener('click', event => {
     if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-    form.elements.building.value = 'house';
+    form.elements.building.value = homeBuilding.value;
     $('purpose').value = 'sale';
     $('survey').checked = false;
     form.elements.processing.value = 'standard';
@@ -124,6 +201,7 @@ try {
   });
   update();
 } catch (error) {
+  $('quote-overview').hidden = true;
   $('price').textContent = t('ui_unavailable','Nedostupná');
   $('price-detail').textContent = t('ui_pricing_error','Ceník se nepodařilo načíst. Obnovte stránku a zkuste to znovu.');
 }

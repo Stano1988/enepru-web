@@ -62,18 +62,24 @@ def initialize():
             'ux_express_copy': 'Příplatek dle kalkulačky. Od potvrzení zakázky a kompletních podkladů.',
         }
         previous_intro = {
-            'text_0015': ('Dokumenty k domu.', 'PENB a pasporty staveb', 'Prodáváte nebo pronajímáte?', 'Energetický průkaz pro vaši nemovitost', 'Zpracuji vám energetický průkaz'),
+            'text_0015': ('Dokumenty k domu.', 'PENB a pasporty staveb', 'Prodáváte nebo pronajímáte?', 'Energetický průkaz pro vaši nemovitost', 'Zpracuji vám energetický průkaz', 'Energetický průkaz pro vaši stavbu'),
             'text_0017': (
                 'Potřebujete energetický průkaz nebo chybějící dokumentaci k domu? Připravím PENB i pasport stavby. Cenu průkazu zjistíte předem; pokud při prodeji či pronájmu nemáte podklady, přijedu zaměřit.',
                 'Prodáváte nebo pronajímáte nemovitost? Zjistěte, kolik bude stát energetický průkaz. Zpracovávám PENB i pro novostavby a rekonstrukce.',
                 'Připravím vám energetický průkaz. Vyberte typ a velikost nemovitosti a hned zjistíte cenu. Pokud vám chybí plány, můžu stavbu přijet zaměřit.',
                 'Zpracuji PENB pro prodej, pronájem i stavební řízení. Pokud při prodeji nebo pronájmu chybí plány, můžu stavbu zaměřit.',
                 'Pro prodej, pronájem i stavební řízení. Pokud u prodeje nebo pronájmu chybí plány, můžu stavbu zaměřit.',
+                'Prodáváte, pronajímáte nebo stavíte? Zpracuji vám PENB. Pokud při prodeji nebo pronájmu chybí plány, můžu stavbu zaměřit.',
             ),
             'text_0018': ('Zjistit cenu PENB', 'Přejít do kalkulačky PENB'),
             'cta_note': ('Kalkulace je nezávazná a bez zadání kontaktu.', 'Kalkulace bez zadání kontaktu.', 'V kalkulačce můžete vybrat i jiný typ stavby. Kontakt zadáte až u poptávky.'),
             'home_example_label': ('Příklad ceny PENB', 'Cena v příkladu'),
             'home_quote_heading': ('Kolik stojí PENB?',),
+            'home_hero_note': ('Cenu zjistíte i bez zadání kontaktu.',),
+            'home_quote_purpose': ('prodej nebo pronájem',),
+            'home_pricing_intro': ('Zvolte podlahovou plochu rodinného domu a hned uvidíte cenu. Jiný typ stavby nebo účel vyberete v plné kalkulačce.',),
+            'home_proof_penb': ('PENB ukazuje energetickou třídu budovy a hodnotí její spotřebu při běžném užívání.',),
+            'home_proof_passport': ('Pasport je dokumentace skutečného stavu stavby. Pomůže, když původní plány chybějí.',),
             'home_example_terms': (
                 'Prodej nebo pronájem, kompletní podklady, bez zaměření a expresu.',
                 'Cena za standardní zpracování s kompletními podklady. V kalkulačce lze přidat zaměření nebo expres.',
