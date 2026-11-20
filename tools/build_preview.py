@@ -21,6 +21,7 @@ nav = '''(() => {
       else link.removeAttribute('aria-current');
     });
     document.title = SITE.seo[route].title;
+    document.dispatchEvent(new CustomEvent('site:routechange', {detail: {route}}));
     if (anchors[id]) {
       const target = document.getElementById(id);
       target.tabIndex = -1;
@@ -32,6 +33,7 @@ nav = '''(() => {
   show();
 })();'''
 s=s.replace('<script src="/static/navigation.js"></script>','<script>'+nav+'</script>')
-s=s.replace('<script src="/static/calculator.js"></script>','<script>'+app.ROOT.joinpath('static/calculator.js').read_text()+'</script>')
+for name in ('hero-motion.js', 'calculator.js'):
+    s = s.replace(f'<script src="/static/{name}"></script>', '<script>' + (app.ROOT / 'static' / name).read_text() + '</script>')
 s=s.replace('<script src="/static/forms.js"></script>','<script>document.querySelectorAll("form").forEach(f=>{f.addEventListener("submit",e=>e.preventDefault());f.querySelector("[data-send]").disabled=true;});document.querySelector(".preview").textContent="Samostatný náhled · formuláře a přílohy se neodesílají";</script>')
 out=Path(sys.argv[1]) if len(sys.argv)>1 else app.ROOT/'nahled.html';out.write_text(s);print(out)

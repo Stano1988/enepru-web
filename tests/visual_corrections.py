@@ -35,8 +35,10 @@ with tempfile.TemporaryDirectory() as temp:
         for width in (360, 1440):
             page.set_viewport_size({'width': width, 'height': 900})
             page.goto(origin + '/')
-            expect(page.get_by_role('heading', name='PENB a pasporty staveb', level=1)).to_be_visible()
-            expect(page.locator('main > .page:not([hidden]) img')).to_have_count(0)
+            expect(page.get_by_role('heading', name='Prodáváte nebo pronajímáte?', level=1)).to_be_visible()
+            expect(page.locator('.home-services')).to_have_text('PENB a pasporty staveb')
+            expect(page.locator('.home-papers')).to_have_css('animation-name', 'papers-arrive')
+            assert page.locator('.home-house').evaluate('image => image.complete && image.naturalWidth > 0')
             page.get_by_role('link', name='Zjistit cenu PENB').click()
             expect(page).to_have_url(origin + '/penb#quote-form')
             expect(page.locator('#quote-form')).to_be_focused()
@@ -53,13 +55,28 @@ with tempfile.TemporaryDirectory() as temp:
             expect(page).to_have_url(origin + '/penb#quote-form')
             expect(page.locator('#passport')).to_be_checked()
 
+        page.set_viewport_size({'width': 360, 'height': 550})
+        page.goto(origin + '/')
+        expect(page.locator('.home-papers')).to_have_css('animation-name', 'none')
+        page.locator('.home-stage').scroll_into_view_if_needed()
+        expect(page.locator('.home-papers')).to_have_css('animation-name', 'papers-arrive')
+
+        page.emulate_media(reduced_motion='reduce')
+        page.goto(origin + '/')
+        expect(page.locator('.home-papers')).to_have_css('animation-name', 'none')
+        expect(page.locator('.home-papers')).to_have_css('opacity', '1')
+
+        page.emulate_media(reduced_motion='no-preference')
+        page.set_viewport_size({'width': 1440, 'height': 900})
         page.goto(origin + '/nahled.html')
+        expect(page.locator('.home-papers')).to_have_css('animation-name', 'papers-arrive')
         page.get_by_role('link', name='Zjistit cenu PENB').click()
         expect(page.locator('#quote-form')).to_be_focused()
         expect(page.locator('#size option')).to_have_count(3)
         expect(page.locator('#quote-form [data-send]')).to_be_disabled()
         page.go_back()
         expect(page.locator('#uvod')).to_be_visible()
+        expect(page.locator('.home-papers')).to_have_css('animation-name', 'none')
 
         for route in ('gdpr', 'podminky'):
             page.goto(f'{origin}/{route}')
@@ -72,4 +89,4 @@ with tempfile.TemporaryDirectory() as temp:
     server.shutdown()
     server.server_close()
 
-print('PASS: responsive home, calculator anchors, three house area bands, passport enquiry, portable preview and legal content.')
+print('PASS: responsive home, one-time and reduced motion, calculator anchors, three house area bands, passport enquiry, portable preview and legal content.')

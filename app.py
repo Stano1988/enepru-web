@@ -61,13 +61,23 @@ def initialize():
             'cta_note': 'Cenu uvidíte hned · nezávazně a bez zadávání kontaktu',
             'ux_express_copy': 'Příplatek dle kalkulačky. Od potvrzení zakázky a kompletních podkladů.',
         }
-        older_intro = {
-            'text_0015': 'Dokumenty k domu.',
-            'text_0017': 'Potřebujete energetický průkaz nebo chybějící dokumentaci k domu? Připravím PENB i pasport stavby. Cenu průkazu zjistíte předem; pokud při prodeji či pronájmu nemáte podklady, přijedu zaměřit.',
+        previous_intro = {
+            'text_0015': ('Dokumenty k domu.', 'PENB a pasporty staveb'),
+            'text_0017': (
+                'Potřebujete energetický průkaz nebo chybějící dokumentaci k domu? Připravím PENB i pasport stavby. Cenu průkazu zjistíte předem; pokud při prodeji či pronájmu nemáte podklady, přijedu zaměřit.',
+                'Prodáváte nebo pronajímáte nemovitost? Zjistěte, kolik bude stát energetický průkaz. Zpracovávám PENB i pro novostavby a rekonstrukce.',
+            ),
+            'home_plans_copy': ('Při prodeji nebo pronájmu můžu stavbu pro PENB zaměřit. Pokud potřebujete nové výkresy, připravím pasport skutečného stavu.',),
+            'text_0170': ('Dokumentace chybí?',),
+            'text_0171': ('Pomůžeme ji doplnit.',),
+            'text_0252': ('Ozvěte se.',),
+            'text_0253': ('Domluvíme další krok.',),
         }
         intro_changed = False
         for key, previous in prior_intro.items():
-            if saved['texts'].get(key) == previous or (key in older_intro and saved['texts'].get(key) == older_intro[key]):
+            previous_intro[key] = (*previous_intro.get(key, ()), previous)
+        for key, previous in previous_intro.items():
+            if saved['texts'].get(key) in previous and saved['texts'][key] != defaults['texts'][key]:
                 saved['texts'][key] = defaults['texts'][key]
                 intro_changed = True
         prior_home_seo = {
@@ -239,7 +249,7 @@ def render(route,site,rev):
     domain=os.environ.get('PUBLIC_ORIGIN','').rstrip('/')
     if domain:
         source=source.replace('</head>','<link rel="canonical" href="'+html.escape(domain+('/' if route=='uvod' else '/'+route),quote=True)+'"></head>')
-    source=source.replace('</body>','<script src="/site-data.js"></script><script src="/static/navigation.js"></script><script src="/static/calculator.js"></script><script src="/static/forms.js"></script></body>')
+    source=source.replace('</body>','<script src="/site-data.js"></script><script src="/static/navigation.js"></script><script src="/static/hero-motion.js"></script><script src="/static/calculator.js"></script><script src="/static/forms.js"></script></body>')
     return source
 
 class Handler(BaseHTTPRequestHandler):

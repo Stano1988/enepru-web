@@ -98,3 +98,7 @@ Texty bloků se dají měnit v administraci. Existující vlastní barvy krajů 
 Úvod používá typografii, přímé odkazy na kalkulaci a pasport a přehled termínů. Pracovní fotka majitele zatím není součástí webu. Cenu PENB lze zjistit bez zadání kontaktu a z téže kalkulace pokračovat nezávaznou poptávkou.
 
 Rodinný dům má v kalkulačce tři pásma celkové podlahové plochy: do 150 m², nad 150 do 250 m² a nad 250 m². Pásma používají první tři dosavadní sazby pro každý účel PENB. Čtvrtá sazba zůstává uložená kvůli dříve otevřeným kalkulacím. U bytových domů zůstávají dosavadní pásma podle m² a u jiných staveb individuální nacenění. Kód nového pásma se přenáší společně s čitelným popisem v e-mailu a v poptávce pro CRM.
+
+## Fialový vzhled a animace úvodu — 20. listopadu 2026
+
+Hlavní nadpis úvodu reaguje na prodej a pronájem nemovitosti. Označení „PENB a pasporty staveb“ má menší velikost pod ním. Barevnost kombinuje švestkovou, světlou levandulovou a mosaznou. Úvodní ilustrace využívá dům a dokumenty z původního HTML archivu. Krátký nástup domu, dokumentů a stupnice A–G se přehraje při prvním zobrazení ilustrace. Při nastaveném omezení pohybu je scéna statická. Kalkulace podle podlahové plochy a doručování formulářů nadále používají stávající logiku.
