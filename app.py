@@ -249,18 +249,23 @@ def render_legal(text):
 
 def render(route,site,rev):
     source=ROOT.joinpath('templates/site.html').read_text()
-    sample_price = site['pricing']['house']['sale'][0]
-    first_area, second_area, third_area = site['ui']['ui_house_area_sizes'].split('|')
-    texts = {
-        **site['texts'],
-        'home_example_price': f'{sample_price:,}'.replace(',', '\u00a0') + ' Kč',
-        'home_area_first': first_area,
-        'home_area_second': second_area,
-        'home_area_third': third_area,
-    }
+    texts = site['texts']
     source = re.sub(r'\{\{(\w+)\}\}', lambda m: html.escape(texts.get(m[1], ''), quote=True), source)
     if route not in ROUTES:route='uvod'
-    source=re.sub(r'<section class="page wrap" id="(uvod|penb|pasporty|dotazy|kontakty)"([^>]*)>',lambda m:'<section class="page wrap" id="'+m[1]+'"'+re.sub(r'\s+hidden','',m[2])+(' hidden' if route!=m[1] else '')+'>',source)
+    source=re.sub(r'<section class="page wrap" id="(uvod|penb|pasporty|dotazy|kontakty)"([^>]*)>',lambda m:'<section class="page wrap" id="'+m[1]+'"'+re.sub(r'\s+hidden','',m[2])+(' hidden' if route not in ('uvod', m[1]) else '')+'>',source)
+    if route == 'uvod':
+        source = source.replace('<body>', '<body class="onepage">', 1)
+        source = re.sub(
+            r'href="/(penb|pasporty|dotazy|kontakty)(#[^"]*)?"',
+            lambda m: 'href="' + (m[2] or '#' + m[1]) + '"',
+            source,
+        )
+        source = re.sub(r'<h1 id="(penb-heading|passport-heading|faq-heading|contact-heading)">(.*?)</h1>',
+                        r'<h2 id="\1">\2</h2>', source)
+    else:
+        source = source.replace('<section class="home-partners"', '<section class="home-partners" hidden')
+        source = source.replace('id="passport-link" href="/penb#quote-form"',
+                                'id="passport-link" href="/penb?pasport=1#quote-form"')
     legal=''
     for k,text in site['legal'].items():
         legal+=f'<section class="page wrap" id="{k}"'+(' hidden' if route!=k else '')+'><div class="page-heading"><h1>'+html.escape(site['seo'][k]['title'].split(' | ')[0])+'</h1></div><article class="legal-copy">'+render_legal(text)+'</article></section>'
@@ -279,7 +284,7 @@ def render(route,site,rev):
     domain=os.environ.get('PUBLIC_ORIGIN','').rstrip('/')
     if domain:
         source=source.replace('</head>','<link rel="canonical" href="'+html.escape(domain+('/' if route=='uvod' else '/'+route),quote=True)+'"></head>')
-    source=source.replace('</body>','<script src="/site-data.js"></script><script src="/static/navigation.js"></script><script src="/static/hero-motion.js"></script><script src="/static/calculator.js"></script><script src="/static/forms.js"></script></body>')
+    source=source.replace('</body>','<script src="/site-data.js"></script><script src="/static/calculator.js"></script><script src="/static/forms.js"></script></body>')
     return source
 
 class Handler(BaseHTTPRequestHandler):

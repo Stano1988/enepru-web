@@ -158,36 +158,8 @@ try {
     if (result.passport) parts.push(t('ui_passport_price','Pasport: individuální nabídka, není zahrnut v součtu.'));
     $('price-detail').textContent = parts.join(' ');
   }
-  const homeSize = $('home-size');
-  const homeBuilding = $('home-building');
-  function updateExamplePrice() {
-    const example = quote(pricing, {building: homeBuilding.value, purpose: 'sale', size: homeSize.value, survey: false});
-    const price = formatPrice(example.total);
-    showPrice($('home-example-price'), price);
-    showPrice($('home-offer-price'), price);
-    $('home-offer-property').textContent = homeBuilding.selectedOptions[0].textContent + ' · ' + homeSize.selectedOptions[0].textContent;
-  }
-  function updateHomeSizes() {
-    populateSizes(homeSize, homeBuilding.value === 'house');
-    updateExamplePrice();
-  }
-  homeSize.addEventListener('change', updateExamplePrice);
-  homeBuilding.addEventListener('change', updateHomeSizes);
-  window.addEventListener('pageshow', updateHomeSizes);
-  updateHomeSizes();
-  homeSize.closest('label').hidden = false;
-  homeBuilding.closest('label').hidden = false;
-
-  document.querySelector('.home-price').addEventListener('click', event => {
-    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-    form.elements.building.value = homeBuilding.value;
-    $('purpose').value = 'sale';
-    $('survey').checked = false;
-    form.elements.processing.value = 'standard';
-    update(homeSize.value);
-  });
-
   form.addEventListener('change', () => update());
+  if (new URLSearchParams(location.search).get('pasport') === '1') $('passport').checked = true;
   $('passport-link').addEventListener('click', () => {$('passport').checked = true; update();});
   document.addEventListener('pricing-update', () => {
     Object.assign(pricing, window.SITE.pricing);
@@ -196,7 +168,6 @@ try {
       const fee = pricing.regions[control.dataset.region];
       control.dataset.band = fee === null ? 'request' : String(fee);
     });
-    updateExamplePrice();
     update();
   });
   update();
