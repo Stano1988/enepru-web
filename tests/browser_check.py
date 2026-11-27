@@ -43,9 +43,9 @@ with tempfile.TemporaryDirectory() as temp:
   for width in (360,390,768,1440):
    page.set_viewport_size({'width':width,'height':900})
    for path in ('/','/penb','/pasporty','/dotazy','/kontakty','/gdpr','/podminky','/cookies'):
-    page.goto(origin+path);assert page.locator('main > .page:not([hidden])').count()==(5 if path=='/' else 1)
+    page.goto(origin+path);assert page.locator('main > .page:not([hidden])').count()==1
     assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'),(width,path)
-   page.goto(origin+'/');page.get_by_role('link',name='PENB',exact=True).click();assert page.url.endswith('/#penb');page.go_back();assert page.locator('#uvod').is_visible();page.go_forward();assert page.locator('#penb').is_visible()
+   page.goto(origin+'/');page.get_by_role('link',name='PENB',exact=True).click();assert page.url.endswith('/penb');page.go_back();assert page.locator('#uvod').is_visible();page.go_forward();assert page.locator('#penb').is_visible()
   page.set_viewport_size({'width':390,'height':900});page.goto(origin+'/');page.screenshot(path='/workspace/nahled-mobil.png',full_page=True)
   page.set_viewport_size({'width':1440,'height':1000});page.screenshot(path='/workspace/nahled-desktop.png',full_page=True)
   page.goto(origin+'/admin');page.locator('input[name=password]').fill(password);page.get_by_role('button',name='Přihlásit',exact=True).click();page.wait_for_selector('#editor textarea')
